@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "PLACEHOLDER": {
+    "tab-prot-thf": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/PLACEHOLDER",
+            "outputPath": "dist/tab-prot-thf",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -51,18 +51,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "PLACEHOLDER:build"
+            "browserTarget": "tab-prot-thf:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "PLACEHOLDER:build:production"
+              "browserTarget": "tab-prot-thf:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "PLACEHOLDER:build"
+            "browserTarget": "tab-prot-thf:build"
           }
         },
         "test": {
@@ -97,7 +97,7 @@
         }
       }
     },
-    "PLACEHOLDER-e2e": {
+    "tab-prot-thf-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -105,11 +105,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "PLACEHOLDER:serve"
+            "devServerTarget": "tab-prot-thf:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "PLACEHOLDER:serve:production"
+              "devServerTarget": "tab-prot-thf:serve:production"
             }
           }
         },
@@ -125,5 +125,5 @@
       }
     }
   },
-  "defaultProject": "PLACEHOLDER"
+  "defaultProject": "tab-prot-thf"
 }
