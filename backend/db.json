@@ -1,0 +1,9 @@
+
+{
+    "params": [
+        { "id": 1, "branch": "  ", "param": "MV_LOGICO", "value": true, "type": "boolean", "description": "parametro logico"},
+        { "id": 2, "branch": "01", "param": "MV_NUMERO", "value": 123, "type": "numeric", "description": "parametro numerico"},
+        { "id": 3, "branch": "01", "param": "MV_TEXTO", "value": "Teste", "type": "text", "description": "parametro texto"},
+        { "id": 4, "branch": "01", "param": "MV_DATA", "value": "20190115", "type": "date", "description": "parametro data"}
+    ]
+}
