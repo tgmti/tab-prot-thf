@@ -3,9 +3,10 @@ import { Routes, RouterModule } from '@angular/router';
 
 const routes: Routes = [
   { path: 'home', loadChildren: './home/home.module#HomeModule' },
-  { path: 'users', loadChildren: './users/users.module#UsersModule' },
+  { path: 'params', loadChildren: './params/params.module#ParamsModule' },
   { path: 'tables', loadChildren: './tables/tables.module#TablesModule' },
-  { path: '', redirectTo: '/home', pathMatch: 'full'}
+  { path: 'users', loadChildren: './users/users.module#UsersModule' },
+  { path: '', redirectTo: '/params', pathMatch: 'full'}
 ];
 
 @NgModule({

@@ -1,9 +1,9 @@
 
 {
     "params": [
-        { "id": 1, "branch": "  ", "param": "MV_LOGICO", "value": true, "type": "boolean", "description": "parametro logico"},
-        { "id": 2, "branch": "01", "param": "MV_NUMERO", "value": 123, "type": "numeric", "description": "parametro numerico"},
-        { "id": 3, "branch": "01", "param": "MV_TEXTO", "value": "Teste", "type": "text", "description": "parametro texto"},
-        { "id": 4, "branch": "01", "param": "MV_DATA", "value": "20190115", "type": "date", "description": "parametro data"}
+        { "id": 1, "x6_fil": "  ", "x6_var": "MV_LOGICO", "x6_conteud": true, "x6_tipo": "boolean", "x6_descric": "parametro logico", "x6_propri": "S"},
+        { "id": 2, "x6_fil": "01", "x6_var": "MV_NUMERO", "x6_conteud": 123, "x6_tipo": "numeric", "x6_descric": "parametro numerico", "x6_propri": "S"},
+        { "id": 3, "x6_fil": "01", "x6_var": "MV_TEXTO", "x6_conteud": "Teste", "x6_tipo": "text", "x6_descric": "parametro texto", "x6_propri": "U"},
+        { "id": 4, "x6_fil": "01", "x6_var": "MV_DATA", "x6_conteud": "20190115", "x6_tipo": "date", "x6_descric": "parametro data", "x6_propri": "S"}
     ]
 }

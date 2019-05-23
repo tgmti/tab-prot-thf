@@ -1,3 +1,19 @@
-<p>
-  params-list works!
-</p>
+<thf-page-dynamic-search
+  t-title="Params"
+  [t-actions]="actions"
+  [t-breadcrumb]="breadcrumb"
+  [t-filters]="filters"
+  (t-change-disclaimers)="onChangeDisclaimers($event)"
+  (t-quick-search)="onQuickSearch($event)"
+  (t-advanced-search)="onAdvancedSearch($event)">
+
+  <thf-table
+    t-checkbox
+    t-single-select
+    t-sort="true"
+    t-striped="true"
+    [t-columns]="paramsColumns"
+    [t-items]="params">
+  </thf-table>
+
+</thf-page-dynamic-search>
