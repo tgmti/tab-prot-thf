@@ -1,5 +1,5 @@
 <thf-page-dynamic-search
-  t-title="Params"
+  [t-title]="title"
   [t-actions]="actions"
   [t-breadcrumb]="breadcrumb"
   [t-filters]="filters"
@@ -12,8 +12,8 @@
     t-single-select
     t-sort="true"
     t-striped="true"
-    [t-columns]="paramsColumns"
-    [t-items]="params">
+    [t-columns]="columns"
+    [t-items]="items">
   </thf-table>
 
 </thf-page-dynamic-search>

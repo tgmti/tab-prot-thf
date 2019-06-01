@@ -16,10 +16,10 @@ import { GenericService } from 'src/app/shared/services/generic.service';
   templateUrl: './generic-list.component.html',
   styleUrls: ['./generic-list.component.css']
 })
-export class GenericListComponent<T> implements OnInit {
+export class GenericListComponent implements OnInit {
 
   protected title: string;
-  protected items: Array<T>;
+  protected items: Array<any>;
   protected columns: Array<ThfTableColumn>;
 
   public readonly filters: Array<ThfDynamicFormField>;
@@ -36,11 +36,13 @@ export class GenericListComponent<T> implements OnInit {
   };
 
   constructor(
-    private dataService: GenericService<T>,
+    private dataService: GenericService<any>,
     private thfNotification: ThfNotificationService,
     private thfDialog: ThfDialogService,
     private router: Router
-  ) { }
+  ) { 
+    this.filters = this.dataService.getFiltersFields();
+  }
 
   ngOnInit() {
     this.columns = this.dataService.getColumns();
@@ -60,7 +62,7 @@ export class GenericListComponent<T> implements OnInit {
   }
 
   onQuickSearch(filter) {
-    filter ? this.searchItems({ name: filter }) : this.resetFilters();
+    filter ? this.searchItems({ x6_var: filter }) : this.resetFilters();
   }
 
   private beforeRedirect(itemBreadcrumbLabel) {

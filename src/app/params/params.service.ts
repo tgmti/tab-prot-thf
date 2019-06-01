@@ -1,22 +1,19 @@
 import { Injectable } from '@angular/core';
-// import { HttpClient } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 
 import { ThfTableColumn } from '@totvs/thf-ui/components/thf-table';
 import { ThfDynamicFormField } from '@totvs/thf-ui';
-
-// import { GenericService } from '../generic/service/generic.service';
-// import { Param } from '../model/param.interface';
-
+import { GenericService } from '../shared/services/generic.service';
+import { Param } from '../model/param.interface';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ParamsService /* extends GenericService<Param> */ {
+export class ParamsService extends GenericService<Param> {
 
-  // constructor(http: HttpClient) {
-  //   super(http);
-  // }
-
+  constructor(http: HttpClient) {
+    super(http);
+  }
 
   filter(filters) {
     let filteredItems = [...this.getItems()];

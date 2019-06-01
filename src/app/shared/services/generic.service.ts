@@ -8,7 +8,7 @@ import { TotvsResponse } from 'src/app/model/totvs-response.interface';
 import { ObjectLength } from 'src/app/model/objectLength';
 
 import { environment } from '../../../environments/environment';
-import { ThfTableColumn } from '@totvs/thf-ui';
+import { ThfTableColumn, ThfDynamicFormField } from '@totvs/thf-ui';
 
 @Injectable()
 export class GenericService<T> {
@@ -54,6 +54,10 @@ export class GenericService<T> {
 
   getColumns(): Array<ThfTableColumn> {
     return this.columns;
+  }
+
+  getFiltersFields(): Array<ThfDynamicFormField>{
+    return [];
   }
 
   /** Só para migração */
