@@ -8,6 +8,7 @@ import { TotvsResponse } from 'src/app/model/totvs-response.interface';
 import { ObjectLength } from 'src/app/model/objectLength';
 
 import { environment } from '../../../environments/environment';
+import { ThfTableColumn } from '@totvs/thf-ui';
 
 @Injectable()
 export class GenericService<T> {
@@ -15,6 +16,7 @@ export class GenericService<T> {
   private readonly urlApi: string = environment.urlApi; 
   
   protected path: string;
+  protected columns: Array<ThfTableColumn>;
 
   constructor(private http: HttpClient) {}
 
@@ -50,5 +52,8 @@ export class GenericService<T> {
     return this.http.request(method, `${this.urlApi}/${this.path}`, { body });
   }
 
+  getColumns(): Array<ThfTableColumn> {
+    return this.columns;
+  }
 
 }
