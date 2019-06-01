@@ -5,9 +5,11 @@ import {
   ThfTableColumn,
   ThfPageAction,
   ThfNotificationService,
-  ThfBreadcrumb
+  ThfBreadcrumb,
+  ThfDynamicFormField,
+  ThfDialogService
 } from '@totvs/thf-ui';
-import { GenericService } from 'src/app/generic/service/generic.service';
+import { GenericService } from 'src/app/shared/services/generic.service';
 
 @Component({
   selector: 'app-generic-list',
@@ -16,29 +18,33 @@ import { GenericService } from 'src/app/generic/service/generic.service';
 })
 export class GenericListComponent<T> implements OnInit {
 
-  private data: Array<T>;
-  private columns: Array<ThfTableColumn>;
+  protected title: string;
+  protected items: Array<T>;
+  protected columns: Array<ThfTableColumn>;
+
+  public readonly filters: Array<ThfDynamicFormField>;
 
   public readonly actions: Array<ThfPageAction> = [
-    { label: 'Visualizar', action: this.viewData.bind(this), disabled: this.disableViewParam.bind(this) }
+    { label: 'Visualizar', action: this.viewData.bind(this), disabled: this.disableViewData.bind(this) }
   ];
 
   public readonly breadcrumb: ThfBreadcrumb = {
     items: [
       { label: 'Home', action: this.beforeRedirect.bind(this) },
-      { label: 'Params' }
+      { label: this.title }
     ]
   };
 
   constructor(
     private dataService: GenericService<T>,
     private thfNotification: ThfNotificationService,
+    private thfDialog: ThfDialogService,
     private router: Router
   ) { }
 
   ngOnInit() {
-    this.dataService.getColumns();
-    this.loadData();
+    this.columns = this.dataService.getColumns();
+    this.items = this.dataService.getItems();
   }
 
   onAdvancedSearch(filter) {
@@ -58,7 +64,7 @@ export class GenericListComponent<T> implements OnInit {
   }
 
   private beforeRedirect(itemBreadcrumbLabel) {
-    if (this.params.some(candidate => candidate['$selected'])) {
+    if (this.items.some(data => data['$selected'])) {
       this.thfDialog.confirm({
         title: `Confirm redirect to ${itemBreadcrumbLabel}`,
         message: `There is data selected. Are you sure you want to quit?`,
@@ -69,32 +75,25 @@ export class GenericListComponent<T> implements OnInit {
     }
   }
 
-  private disableViewParam() {
-    return !this.params.find(param => param['$selected']);
+  private disableViewData() {
+    return !this.items.find(data => data['$selected']);
   }
 
-  private viewParam() {
-    const selectedParam = this.params.find(param => param['$selected']);
+  private viewData() {
+    const selectedParam = this.items.find(param => param['$selected']);
     this.thfNotification.success(`Visualizar a param ${selectedParam['name']}`);
   }
 
   private resetFilters() {
-    this.params = this.paramsService.resetFilterParams();
+    this.items = this.dataService.resetFilterParams();
   }
 
   private searchItems(filter) {
-    this.params = this.paramsService.filter(filter);
-  }
-
-  private updateFilters() {
-  }
-
-  private viewData() {
-    const selectedData = this.data.find(data => data['$selected']);
-    this.thfNotification.success(`Visualizar a param ${selectedData['name']}`);
+    this.items = this.dataService.filter(filter);
   }
 
   /** @description Consulta dos dados */
+  /* 
   public loadData(params: { page?: number, search?: string} = {}) {
     // this.loading = true;
     this.clientesService.setLoading(true)
@@ -108,6 +107,7 @@ export class GenericListComponent<T> implements OnInit {
       this.clientesService.setHasNext(response.hasNext);
       this.clientesService.setLoading(false);
       // this.loading = false;
-    });
+    }); 
+    */
 
 }

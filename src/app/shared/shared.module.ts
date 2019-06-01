@@ -3,13 +3,16 @@ import { FormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 
 import { ThfModule } from '@totvs/thf-ui';
+import { ThfPageDynamicSearchModule } from '@totvs/thf-templates';
+
 import { GenericListComponent } from './components/generic-list/generic-list.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
-    ThfModule
+    ThfModule,
+    ThfPageDynamicSearchModule
   ],
   exports: [
     CommonModule,
