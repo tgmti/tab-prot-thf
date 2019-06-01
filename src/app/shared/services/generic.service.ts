@@ -56,4 +56,25 @@ export class GenericService<T> {
     return this.columns;
   }
 
+  /** Só para migração */
+  getItems() {
+    return [];
+  }
+
+  resetFilterParams() {
+    return [...this.getItems()];
+  }
+
+  filter(filters) {
+    let filteredItems = [...this.getItems()];
+
+    Object.keys(filters).forEach(filter => {
+      filteredItems = filteredItems.filter(register => {
+        return register[filter].toLocaleLowerCase().includes(filters[filter].toLocaleLowerCase());
+      });
+    });
+
+    return filteredItems;
+  }
+
 }

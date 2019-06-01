@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 // import { HttpClient } from '@angular/common/http';
 
 import { ThfTableColumn } from '@totvs/thf-ui/components/thf-table';
+import { ThfDynamicFormField } from '@totvs/thf-ui';
 
 // import { GenericService } from '../generic/service/generic.service';
 // import { Param } from '../model/param.interface';
@@ -42,6 +43,15 @@ export class ParamsService /* extends GenericService<Param> */ {
       { column: 'x6_tipo', label: 'Tipo', type: 'string' }, 
       { column: 'x6_conteud', label: 'Conteúdo', type: 'string' }, 
       { column: 'x6_descric', label: 'Descrição', type: 'string' }, 
+    ];
+  }
+
+  getFiltersFields(): Array<ThfDynamicFormField> {
+    return [
+      { property: 'id', label: 'ID', gridColumns: 6 },
+      { property: 'x6_var', label: 'Parâmetro', gridColumns: 6 },
+      { property: 'x6_fil', label: 'Filial', gridColumns: 6 },
+      { property: 'x6_tipo', label: 'Tipo', gridColumns: 6,  },
     ];
   }
 
