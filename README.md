@@ -25,3 +25,20 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 ## Further help
 
 To get more help on the THF CLI use `thf --help` or go check out the [THF CLI README](https://github.com/totvs/thf-cli/blob/master/README.md).
+
+----------------------
+## Future Features
+
+[v0.1](https://github.com/tgmti/tab-prot-thf/issues/1)
+
+[other](https://github.com/tgmti/tab-prot-thf/issues/2)
+
+----------------------
+## References
+
+[THF](https://thf.totvs.com.br/home)
+
+[REST+ADVPL](http://tdn.totvs.com/display/framework/REST+ADVPL)
+
+[Guia de implementação de API V2.0](http://tdn.totvs.com.br/pages/viewpage.action?pageId=484701395)
+
