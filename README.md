@@ -36,9 +36,21 @@ To get more help on the THF CLI use `thf --help` or go check out the [THF CLI RE
 ----------------------
 ## References
 
+### FrontEnd
+
 [THF](https://thf.totvs.com.br/home)
+
+### BackEnd
 
 [REST+ADVPL](http://tdn.totvs.com/display/framework/REST+ADVPL)
 
 [Guia de implementação de API V2.0](http://tdn.totvs.com.br/pages/viewpage.action?pageId=484701395)
+
+[SQLiteCLI](http://tdn.totvs.com/display/tec/SQLiteCLI)
+
+[DbCreate](http://tdn.totvs.com/display/tec/DBCreate)
+
+[DBTblCopy](http://tdn.totvs.com/display/tec/DBTblCopy)
+
+[DBSqlExec](http://tdn.totvs.com/display/tec/DBSqlExec)
 

@@ -12,6 +12,7 @@ WSRESTFUL tabprotthf DESCRIPTION 'API para consulta das confiugurações do dicion
     WSDATA page       AS INTEGER
     WSDATA search     AS STRING
     WSDATA params     AS STRING
+    WSDATA fields     AS STRING
     
     WSMETHOD GET DESCRIPTION 'Retornar os dados das entidade(s)' ;
     WSSYNTAX '/tables || /tables/{id} || /fields || fields/{id} '
@@ -20,9 +21,8 @@ END WSRESTFUL
  
 // O metodo GET nao precisa necessariamente receber parametros de querystring, por exemplo:
 // WSMETHOD GET WSSERVICE 
-WSMETHOD GET WSRECEIVE page, pageSize, search, params WSSERVICE tabprotthf
+WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields WSSERVICE tabprotthf
 
-   Local i
    Local cAlias
    Local lRet:= .F.
 
@@ -32,6 +32,7 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params WSSERVICE tabprotthf
    Default ::pageSize:= 20
    Default ::search  := ''
    Default ::params  := ''
+   Default ::fields  := ''
 
    // define o tipo de retorno do método
    ::SetContentType('application/json')
@@ -57,7 +58,7 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params WSSERVICE tabprotthf
       EndCase
    
       If ! Empty(cAlias)
-         oResponse:= GetAliasContent(cAlias, ::search, ::params, ::aURLParms, ::pageSize, ::page)
+         oResponse:= GetAliasContent(cAlias, ::fields, ::search, ::params, ::aURLParms, ::pageSize, ::page)
 
          If oResponse != Nil
             ::SetResponse( oResponse:TojSon() )
@@ -85,7 +86,7 @@ Return (lRet)
 
 /*/
 //===================================================================================================================\
-Static Function GetAliasContent( cAlias, cSearch, cParams, aURLParms, nPageSize, nPage )
+Static Function GetAliasContent( cAlias, cFields, cSearch, cParams, aURLParms, nPageSize, nPage )
    
    Local oResponse
    Local oItem
@@ -93,34 +94,66 @@ Static Function GetAliasContent( cAlias, cSearch, cParams, aURLParms, nPageSize,
    Local nTotal:= 0
    Local nTotRet:= 0
    Local lHasNext:= .F.
+   Local cTblSQLite:= 'tabProt'+cAlias
+   Local cAliSQLite:= 'TB'+cAlias
+   Local cAliQry:= 'TRB'+cAlias
 
    oResponse:= JSonObject():New()
 
-   DbSelectArea(cAlias)
-   DbSetOrder(1)
-   DbGoTop()
-   aStruct:= (cAlias)->(DbStruct())
+   DBUseArea( .T., 'SQLITE_SYS', cTblSQLite, cAliSQLite, .T., .F. )
+
+   If Select(cAliSQLite) <> 0 .And. (cAliSQLite)->(FCount()) > 0
+      aStruct:= (cAliSQLite)->(DbStruct())
+
+   Else
+      DBCloseArea()
+
+      DbSelectArea(cAlias)
+      DbSetOrder(1)
+      DbGoTop()
+      aStruct:= (cAlias)->(DbStruct())
+
+      DBCreate( cTblSQLite, aStruct, 'SQLITE_SYS' )
+      DBUseArea( .T., 'SQLITE_SYS', cTblSQLite, cAliSQLite, .F., .F. )
+
+      If ! DBTblCopy(cAlias, cAliSQLite)
+         SetRestFault(500, "Erro ao Copiar o alias para o SQLite")
+         FreeObj(oResponse)
+         Return Nil
+      EndIf
+
+   EndIf
 
    oResponse['items']:= {}
-   
-   While (cAlias)->(!Eof())
 
-      nTotal++
+   If DBSqlExec(cAliQry, 'SELECT * FROM '+cTblSQLite, 'SQLITE_SYS')   
+      While (cAliQry)->(!Eof())
 
-      If ( nPageSize * (nPage-1) ) < nTotal .And. ( nPageSize * nPage ) >= nTotal
-         nTotRet++
-         aAdd( oResponse['items'], JSonObject():New() )
-         oItem:= ATail(oResponse['items'])
+         nTotal++
 
-         aEval( aStruct, {|x,y| oItem[x[1]]:= FieldGet(y) } )
+         If ( nPageSize * (nPage-1) ) < nTotal .And. ( nPageSize * nPage ) >= nTotal
+            nTotRet++
+            aAdd( oResponse['items'], JSonObject():New() )
+            oItem:= ATail(oResponse['items'])
 
-         (cAlias)->(DbSkip())
-         lHasNext:= (cAlias)->(!Eof())
-      Else
-         (cAlias)->(DbSkip())
-      EndIf
-      
-   EndDo
+            aEval( aStruct, {|x,y| oItem[lower(x[1])]:= FieldGet(FieldPos(x[1])) } )
+
+            (cAliQry)->(DbSkip())
+            lHasNext:= (cAliQry)->(!Eof())
+         Else
+            (cAliQry)->(DbSkip())
+         EndIf
+         
+      EndDo
+   EndIf
+
+   If Select(cAliQry) <> 0
+      (cAliQry)->(DbCloseArea())
+   EndIf
+
+   If Select(cAliSQLite) <> 0
+      (cAliSQLite)->(DbCloseArea())
+   EndIf
 
    oResponse['hasNext']:= lHasNext
    oResponse['total']:= nTotal
@@ -131,3 +164,16 @@ Return ( oResponse )
 
 
 
+
+User Function TSTSqlite
+   RpcSetEnv('99','01')
+   cAlias:= "SX6"
+   cSearch   := ''     
+   cParams   := ''     
+   aURLParms := {}        
+   nPageSize := 50       
+   nPage     := 1  
+   oResponse:= GetAliasContent( cAlias, '', cSearch, cParams, aURLParms, nPageSize, nPage )
+   ConOut( oResponse:TojSon() )
+   RpcClearEnv()
+Return (Nil)
