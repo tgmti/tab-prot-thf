@@ -1,45 +1,86 @@
 #INCLUDE 'TOTVS.CH'
 #INCLUDE 'RESTFUL.CH'
 
-#DEFINE ERROR_ALIAS_NOT_TREATED_ID     404
-#DEFINE ERROR_ALIAS_NOT_TREATED_MSG    'Alias não tratado "#1"'
-#DEFINE ERROR_ALIAS_NOT_INFORMED_ID    404
-#DEFINE ERROR_ALIAS_NOT_INFORMED_MSG   'Alias não informado na URL'
+#DEFINE ERROR_ENDPOINT_NOT_TREATED_ID     404
+#DEFINE ERROR_ENDPOINT_NOT_TREATED_MSG    'Endpoint não tratado "#1"'
+#DEFINE ERROR_ENDPOINT_NOT_INFORMED_ID    404
+#DEFINE ERROR_ENDPOINT_NOT_INFORMED_MSG   'Endpoint não informado na URL'
 
+#DEFINE fieldsAPI    'id,branch,description,content,property'
 #DEFINE SX2_FIELDS   'X2_CHAVE,X2_ARQUIVO,X2_NOME,X2_NOMESPA,X2_NOMEENG,X2_MODO,X2_MODOUN,X2_MODOEMP,X2_UNICO'
 #DEFINE SX3_FIELDS   'X3_ARQUIVO,X3_ORDEM,X3_CAMPO,X3_TIPO,X3_TAMANHO,X3_DECIMAL,X3_TITULO,X3_TITSPA,X3_TITENG,X3_DESCRIC,X3_DESCSPA,X3_DESCENG,X3_PICTURE,X3_VALID,X3_RELACAO,X3_F3,X3_NIVEL,X3_TRIGGER,X3_PROPRI,X3_BROWSE,X3_VISUAL,X3_CONTEXT,X3_OBRIGAT,X3_VLDUSER,X3_CBOX,X3_CBOXSPA,X3_CBOXENG,X3_PICTVAR,X3_WHEN,X3_INIBRW,X3_GRPSXG,X3_FOLDER,X3_AGRUP'
 #DEFINE SIX_FIELDS   'INDICE,ORDEM,CHAVE,DESCRICAO,DESCSPA,DESCENG,PROPRI,F3,NICKNAME,SHOWPESQ,IX_VIRTUAL,IX_VIRCUST'
 #DEFINE SX6_FIELDS   'X6_FIL,X6_VAR,X6_TIPO,X6_DESCRIC,X6_DESC1,X6_DESC2,X6_CONTEUD,X6_DSCENG,X6_DSCENG1,X6_DSCENG2,X6_CONTENG,X6_DSCSPA,X6_DSCSPA1,X6_DSCSPA2,X6_CONTSPA,X6_INIT,X6_PROPRI,X6_VALID'
 
+#DEFINE ENDPOINT_CONFIG   '{ ' + ;
+   ' "TABLES": { "alias": "SX2" , "fields": "' + SX2_FIELDS + '" } , ' + ;
+   ' "FIELDS": { "alias": "SX3" , "fields": "' + SX3_FIELDS + '" } , ' + ;
+   ' "INDEXES":{ "alias": "SIX" , "fields": "' + SIX_FIELDS + '" } , ' + ;
+   ' "PARAMS": { "alias": "SX6" , "fields": "' + SX6_FIELDS + '" }   ' + ;
+' } '
 
+//====================================================================================================================\
+/*/{Protheus.doc}tabprotthf
+  ====================================================================================================================
+   @description
+   Definição do Serviço REST
+
+   @author TSC681 Thiago Mota
+   @version 1.0
+   @since 03/06/2019
+
+   @obs
+   Seguindo o Guia de implementação de API V2.0
+   http://tdn.totvs.com.br/pages/viewpage.action?pageId=484701395
+
+/*/
+//===================================================================================================================\
 WSRESTFUL tabprotthf DESCRIPTION 'API para consulta das confiugurações do dicionário Protheus'
  
-    WSDATA pageSize   AS INTEGER
-    WSDATA page       AS INTEGER
-    WSDATA search     AS STRING
-    WSDATA params     AS STRING
-    WSDATA fields     AS STRING
+   WSDATA pageSize   AS INTEGER
+   WSDATA page       AS INTEGER
+   WSDATA search     AS STRING
+   WSDATA params     AS STRING
+   WSDATA fields     AS STRING
+   WSDATA order      AS STRING
     
-    WSMETHOD GET DESCRIPTION 'Retornar os dados das entidade(s)' ;
-    WSSYNTAX '/tables || /tables/{id} || /fields || fields/{id} '
+   WSMETHOD GET DESCRIPTION 'Retornar os dados das entidade(s)' ;
+      WSSYNTAX '/tables || /tables/{id} || /fields || fields/{id} '
   
 END WSRESTFUL
+// FIM da definição do WSRESTFUL
+//======================================================================================================================
  
-// O metodo GET nao precisa necessariamente receber parametros de querystring, por exemplo:
-// WSMETHOD GET WSSERVICE 
-WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields WSSERVICE tabprotthf
+
+
+//====================================================================================================================\
+/*/{Protheus.doc}tabprotthf|GET
+  ====================================================================================================================
+   @description
+   Método GET para as entidades
+
+   @author TSC681 Thiago Mota
+   @version 1.0
+   @since 03/06/2019
+
+/*/
+//===================================================================================================================\
+WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order WSSERVICE tabprotthf
 
    Local lRet:= .F.
-   Local cAlias
+   Local nPos
+   Local oConfig:= FromJSon(ENDPOINT_CONFIG)
+   Local cEndpoint
    Local cQryFields
 
    // as propriedades da classe receberão os valores enviados por querystring
    // exemplo: http://localhost:8080/sample?page=1&pageSize=10
-   Default ::page    := 1
-   Default ::pageSize:= 20
-   Default ::search  := ''
-   Default ::params  := ''
-   Default ::fields  := ''
+   Default ::page     := 1
+   Default ::pageSize := 20
+   Default ::search   := ''
+   Default ::params   := ''
+   Default ::fields   := ''
+   Default ::order    := ''
 
    // define o tipo de retorno do método
    ::SetContentType('application/json')
@@ -48,40 +89,116 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields WSSERVICE tabprott
    // exemplo: http://localhost:8080/sample/1
    If Len(::aURLParms) > 0
       
-      // Verifica se o arquivo solicitado é valido
-      cAlias:= Upper(AllTrim(::aURLParms[1]))
-      Do Case
-         Case cAlias == 'TABLES'
-            cAlias:= 'SX2'
-            cQryFields:= SX2_FIELDS
-         Case cAlias == 'FIELDS'
-            cAlias:= 'SX3'
-            cQryFields:= SX3_FIELDS
-         Case cAlias == 'INDEXES'
-            cAlias:= 'SIX'
-            cQryFields:= SIX_FIELDS
-         Case cAlias == 'PARAMS'
-            cAlias:= 'SX6'
-            cQryFields:= SX6_FIELDS
-         OtherWise
-            SetRestFault(ERROR_ALIAS_NOT_TREATED_ID, i18n(ERROR_ALIAS_NOT_TREATED_MSG, {cAlias}) )
-            cAlias:= ''
-      EndCase
-   
-      If ! Empty(cAlias)
-         oResponse:= GetAliasContent(cAlias, ::fields, ::search, ::params, ::aURLParms, ::pageSize, ::page, cQryFields)
+      // Verifica se o endpoint solicitado é valido
+      cEndpoint:= Upper(AllTrim(::aURLParms[1]))
+      If ! Empty( oConfig[cEndpoint] )
+         
+         // Verifica se os campos passados existem na base
+         cFields:= CheckFields( oConfig[cEndpoint], ::fields )
+         
+         // Verifica se os campos passados no order existem, e se houver algum que não estava no fields, adiciona
+         cOrder:= CheckOrder( oConfig[cEndpoint], ::order, cFields, @cFieldsQry )
+         
+         cFilters:= MountFilters( oConfig[cEndpoint], ::aURLParms )
 
-         If oResponse != Nil
-            ::SetResponse( oResponse:TojSon() )
-            lRet:= .T.
+         // Verifica se a entidade existe no SQLite, senão, cria  
+         If CheckEntity( oConfig[cEndpoint], /*lForceRefresh*/ )
+            cQuery:= MountQuery( oConfig[cEndpoint]['alias'], cFieldsQry, cFilters, cOrder )
+
+            // Executa a Query e monta o Objeto
+            oResponse:= GetContent( cQuery, ::pageSize, ::page )
+
+            If oResponse != Nil
+               ::SetResponse( oResponse:TojSon() )
+               lRet:= .T.
+            EndIf
+
          EndIf
-      EndIf
 
+      Else
+         SetRestFault(ERROR_ENDPOINT_NOT_TREATED_ID, i18n(ERROR_ENDPOINT_NOT_TREATED_MSG, {cAlias}) )
+       EndIf
+ 
    Else
-      SetRestFault(ERROR_ALIAS_NOT_INFORMED_ID, ERROR_ALIAS_NOT_INFORMED_MSG )    
+      SetRestFault(ERROR_ENDPOINT_NOT_INFORMED_ID, ERROR_ENDPOINT_NOT_INFORMED_MSG )    
    EndIf
 
 Return (lRet)
+// FIM do método GET
+//======================================================================================================================
+
+
+
+//====================================================================================================================\
+/*/{Protheus.doc}CheckEntity
+  ====================================================================================================================
+   @description
+   Verifica se a entidade existe no SQLite, senão, executa a cópia
+
+   @author TSC681 Thiago Mota
+   @version 1.0
+   @since 06/06/2019
+
+/*/
+//===================================================================================================================\
+Static Function CheckEntity( oEndPoint, lForceRefresh )
+   
+   Local cAlias   := oEndPoint['alias']
+   Local cStruct  := oEndPoint['fields']
+   Local cAliDest := cAlias+'DEST'
+   Local lRet     := .F.
+
+   Default lForceRefresh:= .F.
+
+   DBUseArea( .T., 'SQLITE_SYS', cAlias, cAliDest, .T., .F. )
+
+   lRet:= Select(cAliDest) <> 0 .And. (cAliDest)->(FCount()) > 0 
+
+   If ! lRet .Or. lForceRefresh
+
+      If lForceRefresh .And. lRet
+         If ! DBSqlExec('TRB', 'DROP TABLE '+cAlias, 'SQLITE_SYS')
+            
+            lRet:= .F.
+            SetRestFault(500, "Erro ao excluir a tabela SQLite para recriar")
+
+            If Select(cAliDest) <> 0
+               (cAliDest)->(DbCloseArea())
+            EndIf
+            Return (lRet)            
+         EndIf
+      EndIf
+
+      DBCloseArea()
+
+      DbSelectArea(cAlias)
+      DbSetOrder(1)
+      DbGoTop()
+      aStruct:= U_aFilter( (cAlias)->(DbStruct()), {|x| x[1] $ cStruct } )
+
+      DBCreate( cAlias, aStruct, 'SQLITE_SYS' )
+      DBUseArea( .T., 'SQLITE_SYS', cAlias, cAliDest, .F., .F. )
+
+      lRet:= Select(cAliDest) <> 0 .And. (cAliDest)->(FCount()) > 0 
+
+      If lRet
+         If ! DBTblCopy(cAlias, cAliDest)
+            SetRestFault(500, "Erro ao Copiar os dados do alias para o SQLite")
+         EndIf
+      Else
+         SetRestFault(500, "Erro ao criar a tabela no SQLite")
+      EndIf
+      
+      If Select(cAliDest) <> 0
+         (cAliDest)->(DbCloseArea())
+      EndIf
+
+   EndIf
+
+Return ( lRet )
+// FIM da Funcao CheckEntity
+//======================================================================================================================
+
 
 
 
@@ -105,12 +222,8 @@ Static Function GetAliasContent( cAlias, cFields, cSearch, cParams, aURLParms, n
    Local nTotal:= 0
    Local nTotRet:= 0
    Local lHasNext:= .F.
-   Local cTblSQLite:= 'tabProt'+cAlias
-   Local cAliSQLite:= 'TB'+cAlias
+   Local cAlias:= 'tabProt'+cAlias
    Local cAliQry:= 'TRB'+cAlias
-   Local lExistSQLite
-
-   Default lForceRefresh:= .F.
    
    If Empty(cFields)
       cFields:= cQryFields
@@ -118,37 +231,10 @@ Static Function GetAliasContent( cAlias, cFields, cSearch, cParams, aURLParms, n
 
    oResponse:= JSonObject():New()
 
-   DBUseArea( .T., 'SQLITE_SYS', cTblSQLite, cAliSQLite, .T., .F. )
-
-   lExistSQLite:= Select(cAliSQLite) <> 0 .And. (cAliSQLite)->(FCount()) > 0 
-
-   If ! lExistSQLite .Or. lForceRefresh
-
-      If lForceRefresh .And. lExistSQLite
-         DBSqlExec(cAliQry, 'DROP TABLE '+cTblSQLite, 'SQLITE_SYS')
-      EndIf
-
-      DBCloseArea()
-
-      DbSelectArea(cAlias)
-      DbSetOrder(1)
-      DbGoTop()
-      aStruct:= U_aFilter( (cAlias)->(DbStruct()), {|x| x[1] $ cQryFields } )
-
-      DBCreate( cTblSQLite, aStruct, 'SQLITE_SYS' )
-      DBUseArea( .T., 'SQLITE_SYS', cTblSQLite, cAliSQLite, .F., .F. )
-
-      If ! DBTblCopy(cAlias, cAliSQLite)
-         SetRestFault(500, "Erro ao Copiar o alias para o SQLite")
-         FreeObj(oResponse)
-         Return Nil
-      EndIf
-
-   EndIf
 
    oResponse['items']:= {}
 
-   If DBSqlExec(cAliQry, 'SELECT ' + cFields + ' FROM '+cTblSQLite, 'SQLITE_SYS')   
+   If DBSqlExec(cAliQry, 'SELECT ' + cFields + ' FROM '+cAlias, 'SQLITE_SYS')   
       While (cAliQry)->(!Eof())
 
          nTotal++
@@ -171,10 +257,6 @@ Static Function GetAliasContent( cAlias, cFields, cSearch, cParams, aURLParms, n
 
    If Select(cAliQry) <> 0
       (cAliQry)->(DbCloseArea())
-   EndIf
-
-   If Select(cAliSQLite) <> 0
-      (cAliSQLite)->(DbCloseArea())
    EndIf
 
    oResponse['hasNext']:= lHasNext
@@ -214,7 +296,39 @@ Return ( xValue )
 
 
 
+//====================================================================================================================\
+/*/{Protheus.doc}FromJSon
+  ====================================================================================================================
+   @description
+   Função auxiliar para instanciar um novo JSONObject
 
+   @author TSC681 Thiago Mota
+   @version 1.0
+   @since 06/06/2019
+
+/*/
+//===================================================================================================================\
+Static Function FromJSon(cJSON) 
+   Local oJson:= JSonObject():New()
+   oJson:FromJSon(cJSON)
+Return(oJson) 
+// FIM da Função FromJSon
+//======================================================================================================================
+
+
+
+User Function TstJSon
+   BeginContent var cJson
+      {  "caractere": "caractere", 
+         "numero": 123, 
+         "logico":true, 
+         "matriz":[ 
+            { "posicao":1 }, { "posicao":2 } 
+         ] 
+      }
+   EndContent
+   ObjectJSON:= FromJSon(cJson)
+REturn
 
 // U_TSTSqlite
 User Function TSTSqlite
