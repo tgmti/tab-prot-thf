@@ -76,7 +76,6 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order, forceRefre
    Local cFields
    Local cFilters
    Local cOrder
-   Local cFieldsQry
    Local cId
 
    // as propriedades da classe receberão os valores enviados por querystring
@@ -100,8 +99,8 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order, forceRefre
       cEndpoint:= Upper(AllTrim(::aURLParms[1]))
       If ! Empty( oConfig[cEndpoint] )
          
-         // Verifica se os campos passados existem na base
-         cFields:= cFieldsQry:= CheckFields( oConfig[cEndpoint], ::fields )
+         // Verifica se os campos passados existem na Entidade
+         cFields:= CheckFields( oConfig[cEndpoint]['fields'], ::fields )
 
          // GET passando o ID da entidade
          If Len(::aURLParms) > 1
@@ -110,14 +109,14 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order, forceRefre
          Else
             
             // Verifica se os campos passados no order existem, e se houver algum que não estava no fields, adiciona
-            cOrder:= CheckOrder( oConfig[cEndpoint], ::order, cFields, @cFieldsQry )
+            cOrder:= CheckOrder( oConfig[cEndpoint]['fields'], ::order )
             
-            cFilters:= MountFilters( oConfig[cEndpoint], ::aURLParms )
+            cFilters:= MountFilters( oConfig[cEndpoint] )
          EndIf
 
          // Verifica se a entidade existe no SQLite, senão, cria  
          If CheckEntity( oConfig[cEndpoint], ::forceRefresh )
-            cQuery:= MountQuery( oConfig[cEndpoint]['alias'], cFieldsQry, cFilters, cOrder )
+            cQuery:= MountQuery( oConfig[cEndpoint]['alias'], cFields, cFilters, cOrder )
 
             // Executa a Query e monta o Objeto
             oResponse:= GetContent( cQuery, ::pageSize, ::page )
@@ -142,6 +141,7 @@ Return (lRet)
 //======================================================================================================================
 
 
+
 //====================================================================================================================\
 /*/{Protheus.doc}CheckFields
   ====================================================================================================================
@@ -154,21 +154,40 @@ Return (lRet)
 
 /*/
 //===================================================================================================================\
-Static Function CheckFields( oEndpoint, cFields )
+Static Function CheckFields( cDefaultFields, cFields )
    
    Local cFieldsRet:= ''
 
    If ! Empty(cFields)
-      cFieldsRet:= U_aJoin( U_aFilter( Strtokarr2( oEndPoint['fields'], ',', .F.), {|x| x $ cFields } ), ',' )
+      cFieldsRet:= U_aJoin( U_aFilter( Strtokarr2( cDefaultFields, ',', .F.), {|x| x $ cFields } ), ',' )
    EndIf
    
    // Se nenhum dos campos passados corresponder, retorna o padrão do Endpoint
    If Empty(cFieldsRet)
-      cFieldsRet:= oEndPoint['fields']
+      cFieldsRet:= cDefaultFields
    EndIf
 
 Return ( cFieldsRet )
 // FIM da Funcao CheckFields
+//======================================================================================================================
+
+
+
+//====================================================================================================================\
+/*/{Protheus.doc}CheckOrder
+  ====================================================================================================================
+   @description
+   Monta a ordenação da entidade e já avalia os fields passados
+
+   @author TSC681 Thiago Mota
+   @version 1.0
+   @since 09/06/2019
+
+/*/
+//===================================================================================================================\
+Static Function CheckOrder( cDefaultFields, cFields )
+Return ( CheckFields( cDefaultFields, cFields ) )
+// FIM da Funcao CheckOrder
 //======================================================================================================================
 
 
