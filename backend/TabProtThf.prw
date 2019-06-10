@@ -13,10 +13,10 @@
 #DEFINE SX6_FIELDS   'X6_FIL,X6_VAR,X6_TIPO,X6_DESCRIC,X6_DESC1,X6_DESC2,X6_CONTEUD,X6_DSCENG,X6_DSCENG1,X6_DSCENG2,X6_CONTENG,X6_DSCSPA,X6_DSCSPA1,X6_DSCSPA2,X6_CONTSPA,X6_INIT,X6_PROPRI,X6_VALID'
 
 #DEFINE ENDPOINT_CONFIG   '{ ' + ;
-   ' "TABLES": { "alias": "SX2" , "fields": "' + SX2_FIELDS + '" } , ' + ;
-   ' "FIELDS": { "alias": "SX3" , "fields": "' + SX3_FIELDS + '" } , ' + ;
-   ' "INDEXES":{ "alias": "SIX" , "fields": "' + SIX_FIELDS + '" } , ' + ;
-   ' "PARAMS": { "alias": "SX6" , "fields": "' + SX6_FIELDS + '" }   ' + ;
+   ' "TABLES": { "alias": "SX2" , "key": "X2_CHAVE"      , "fields": "' + SX2_FIELDS + '" } , ' + ;
+   ' "FIELDS": { "alias": "SX3" , "key": "X3_CAMPO"      , "fields": "' + SX3_FIELDS + '" } , ' + ;
+   ' "INDEXES":{ "alias": "SIX" , "key": "(INDICE+ORDEM)", "fields": "' + SIX_FIELDS + '" } , ' + ;
+   ' "PARAMS": { "alias": "SX6" , "key": "X6_FIL+X6_VAR" , "fields": "' + SX6_FIELDS + '" }   ' + ;
 ' } '
 
 //====================================================================================================================\
@@ -188,6 +188,31 @@ Return ( cFieldsRet )
 Static Function CheckOrder( cDefaultFields, cFields )
 Return ( CheckFields( cDefaultFields, cFields ) )
 // FIM da Funcao CheckOrder
+//======================================================================================================================
+
+
+
+//====================================================================================================================\
+/*/{Protheus.doc}MountFilters
+  ====================================================================================================================
+   @description
+   Tratamentos dos filtros enviados na query
+
+   @author TSC681 Thiago Mota
+   @version 1.0
+   @since 09/06/2019
+
+/*/
+//===================================================================================================================\
+Static Function MountFilters( oEndPoint, cId )
+   Local cFilters:= ''
+
+   If ! Empty(cId)
+      cFilters:= oEndPoint['key'] + = "'" + cId + "'"
+   EndIf
+
+Return ( cFilters )
+// FIM da Funcao MountFilters
 //======================================================================================================================
 
 
