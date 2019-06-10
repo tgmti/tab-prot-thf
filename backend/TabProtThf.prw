@@ -43,6 +43,7 @@ WSRESTFUL tabprotthf DESCRIPTION 'API para consulta das confiugurações do dicion
    WSDATA params     AS STRING
    WSDATA fields     AS STRING
    WSDATA order      AS STRING
+   WSDATA forceRefresh AS BOOLEAN
     
    WSMETHOD GET DESCRIPTION 'Retornar os dados das entidade(s)' ;
       WSSYNTAX '/tables || /tables/{id} || /fields || fields/{id} '
@@ -65,13 +66,18 @@ END WSRESTFUL
 
 /*/
 //===================================================================================================================\
-WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order WSSERVICE tabprotthf
+WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order, forceRefresh WSSERVICE tabprotthf
 
    Local lRet:= .F.
    Local nPos
    Local oConfig:= FromJSon(ENDPOINT_CONFIG)
    Local cEndpoint
    Local cQryFields
+   Local cFields
+   Local cFilters
+   Local cOrder
+   Local cFieldsQry
+   Local cId
 
    // as propriedades da classe receberão os valores enviados por querystring
    // exemplo: http://localhost:8080/sample?page=1&pageSize=10
@@ -81,6 +87,7 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order WSSERVICE t
    Default ::params   := ''
    Default ::fields   := ''
    Default ::order    := ''
+   Default ::forceRefresh:= .F.
 
    // define o tipo de retorno do método
    ::SetContentType('application/json')
@@ -94,15 +101,22 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order WSSERVICE t
       If ! Empty( oConfig[cEndpoint] )
          
          // Verifica se os campos passados existem na base
-         cFields:= CheckFields( oConfig[cEndpoint], ::fields )
-         
-         // Verifica se os campos passados no order existem, e se houver algum que não estava no fields, adiciona
-         cOrder:= CheckOrder( oConfig[cEndpoint], ::order, cFields, @cFieldsQry )
-         
-         cFilters:= MountFilters( oConfig[cEndpoint], ::aURLParms )
+         cFields:= cFieldsQry:= CheckFields( oConfig[cEndpoint], ::fields )
+
+         // GET passando o ID da entidade
+         If Len(::aURLParms) > 1
+            cId:= Upper(AllTrim(::aURLParms[2]))
+            cFilters:= MountFilters( oConfig[cEndpoint], cId )
+         Else
+            
+            // Verifica se os campos passados no order existem, e se houver algum que não estava no fields, adiciona
+            cOrder:= CheckOrder( oConfig[cEndpoint], ::order, cFields, @cFieldsQry )
+            
+            cFilters:= MountFilters( oConfig[cEndpoint], ::aURLParms )
+         EndIf
 
          // Verifica se a entidade existe no SQLite, senão, cria  
-         If CheckEntity( oConfig[cEndpoint], /*lForceRefresh*/ )
+         If CheckEntity( oConfig[cEndpoint], ::forceRefresh )
             cQuery:= MountQuery( oConfig[cEndpoint]['alias'], cFieldsQry, cFilters, cOrder )
 
             // Executa a Query e monta o Objeto
@@ -125,6 +139,36 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order WSSERVICE t
 
 Return (lRet)
 // FIM do método GET
+//======================================================================================================================
+
+
+//====================================================================================================================\
+/*/{Protheus.doc}CheckFields
+  ====================================================================================================================
+   @description
+   Verifica se os campos passados no fields existem na entidade determina o campos que serão consultados e retornados
+
+   @author TSC681 Thiago Mota
+   @version 1.0
+   @since 09/06/2019
+
+/*/
+//===================================================================================================================\
+Static Function CheckFields( oEndpoint, cFields )
+   
+   Local cFieldsRet:= ''
+
+   If ! Empty(cFields)
+      cFieldsRet:= U_aJoin( U_aFilter( Strtokarr2( oEndPoint['fields'], ',', .F.), {|x| x $ cFields } ), ',' )
+   EndIf
+   
+   // Se nenhum dos campos passados corresponder, retorna o padrão do Endpoint
+   If Empty(cFieldsRet)
+      cFieldsRet:= oEndPoint['fields']
+   EndIf
+
+Return ( cFieldsRet )
+// FIM da Funcao CheckFields
 //======================================================================================================================
 
 
