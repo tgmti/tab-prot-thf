@@ -289,6 +289,37 @@ Return ( lRet )
 
 
 
+//====================================================================================================================\
+/*/{Protheus.doc}MountQuery
+  ====================================================================================================================
+   @description
+   Retorna a Query que será executada no SQLite
+
+   @author TSC681 Thiago Mota
+   @version 1.0
+   @since 09/06/2019
+
+/*/
+//===================================================================================================================\
+Static Function MountQuery( cAlias, cFields, cFilters, cOrder )
+   Local cQuery:= ''
+
+   cQuery+= 'SELECT ' + cFields
+   cQuery+= ' FROM ' + cAlias
+
+   If ! Empty(cFilters)
+      cQuery+= ' WHERE ' + cFilters
+   EndIf
+
+   If ! Empty(cOrder)
+      cQuery+= ' ORDER BY ' + cOrder
+   EndIf
+
+Return ( cQuery )
+// FIM da Funcao MountQuery
+//======================================================================================================================
+
+
 
 //====================================================================================================================\
 /*/{Protheus.doc}GetAliasContent
