@@ -119,7 +119,7 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order, forceRefre
             cQuery:= MountQuery( oConfig[cEndpoint]['alias'], cFields, cFilters, cOrder )
 
             // Executa a Query e monta o Objeto
-            oResponse:= GetContent( cQuery, ::pageSize, ::page )
+            oResponse:= GetContent( cQuery, cFields, cId, ::pageSize, ::page )
 
             If oResponse != Nil
                ::SetResponse( oResponse:TojSon() )
@@ -322,7 +322,7 @@ Return ( cQuery )
 
 
 //====================================================================================================================\
-/*/{Protheus.doc}GetAliasContent
+/*/{Protheus.doc}GetContent
   ====================================================================================================================
    @description
    Obtém os dados do Alias selecionado no formato correto para a mensagem
@@ -333,37 +333,32 @@ Return ( cQuery )
 
 /*/
 //===================================================================================================================\
-Static Function GetAliasContent( cAlias, cFields, cSearch, cParams, aURLParms, nPageSize, nPage, cQryFields, lForceRefresh )
+Static Function GetContent( cQuery, cFields, cId, nPageSize, nPage )
    
    Local oResponse
    Local oItem
-   Local aStruct
-   Local nTotal:= 0
+   Local aItems := {}
+   Local nTotal := 0
    Local nTotRet:= 0
    Local lHasNext:= .F.
-   Local cAlias:= 'tabProt'+cAlias
-   Local cAliQry:= 'TRB'+cAlias
-   
-   If Empty(cFields)
-      cFields:= cQryFields
-   EndIf
 
-   oResponse:= JSonObject():New()
-
-
-   oResponse['items']:= {}
-
-   If DBSqlExec(cAliQry, 'SELECT ' + cFields + ' FROM '+cAlias, 'SQLITE_SYS')   
+   If DBSqlExec(cAliQry, cQuery, 'SQLITE_SYS')   
+      
       While (cAliQry)->(!Eof())
 
          nTotal++
 
          If ( nPageSize * (nPage-1) ) < nTotal .And. ( nPageSize * nPage ) >= nTotal
             nTotRet++
-            aAdd( oResponse['items'], JSonObject():New() )
-            oItem:= ATail(oResponse['items'])
+            aAdd( aItems, JSonObject():New() )
+            oItem:= ATail(aItems)
 
             aEval( Strtokarr2( cFields, ',', .F.), {|x| oItem[lower(x)]:= GetFieldValue(x) } )
+
+            If ! Empty(cId)
+               oResponse:= oItem
+               Exit
+            EndIf
 
             (cAliQry)->(DbSkip())
             lHasNext:= (cAliQry)->(!Eof())
@@ -378,11 +373,15 @@ Static Function GetAliasContent( cAlias, cFields, cSearch, cParams, aURLParms, n
       (cAliQry)->(DbCloseArea())
    EndIf
 
-   oResponse['hasNext']:= lHasNext
-   oResponse['total']:= nTotal
+   If Empty(cId)
+      oResponse:= JSonObject():New()
+      oResponse['items']:= aItems
+      oResponse['hasNext']:= lHasNext
+      oResponse['total']:= nTotal
+   EndIf
 
 Return ( oResponse )
-// FIM da Funcao GetAliasContent
+// FIM da Funcao GetContent
 //======================================================================================================================
 
 
