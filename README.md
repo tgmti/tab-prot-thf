@@ -54,3 +54,4 @@ To get more help on the THF CLI use `thf --help` or go check out the [THF CLI RE
 
 [DBSqlExec](http://tdn.totvs.com/display/tec/DBSqlExec)
 
+[AdvPL TestSuite](https://github.com/nginformatica/advpl-testsuite)
