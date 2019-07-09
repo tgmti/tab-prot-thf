@@ -40,7 +40,7 @@ WSRESTFUL tabprotthf DESCRIPTION 'API para consulta das confiugurações do dicion
    WSDATA pageSize   AS INTEGER
    WSDATA page       AS INTEGER
    WSDATA search     AS STRING
-   WSDATA params     AS STRING
+   WSDATA filters    AS STRING
    WSDATA fields     AS STRING
    WSDATA order      AS STRING
    WSDATA forceRefresh AS BOOLEAN
@@ -66,7 +66,7 @@ END WSRESTFUL
 
 /*/
 //===================================================================================================================\
-WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order, forceRefresh WSSERVICE tabprotthf
+WSMETHOD GET WSRECEIVE page, pageSize, search, filters, fields, order, forceRefresh WSSERVICE tabprotthf
 
    Local lRet:= .F.
    Local nPos
@@ -83,7 +83,7 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order, forceRefre
    Default ::page     := 1
    Default ::pageSize := 20
    Default ::search   := ''
-   Default ::params   := ''
+   Default ::filters  := ''
    Default ::fields   := ''
    Default ::order    := ''
    Default ::forceRefresh:= .F.
@@ -97,7 +97,7 @@ WSMETHOD GET WSRECEIVE page, pageSize, search, params, fields, order, forceRefre
       
       // Verifica se o endpoint solicitado é valido
       cEndpoint:= Upper(AllTrim(::aURLParms[1]))
-      If ! Empty( oConfig[cEndpoint] )
+      If oConfig[cEndpoint] != Nil
          
          // Verifica se os campos passados existem na Entidade
          cFields:= CheckFields( oConfig[cEndpoint]['fields'], ::fields )
@@ -208,7 +208,7 @@ Static Function MountFilters( oEndPoint, cId )
    Local cFilters:= ''
 
    If ! Empty(cId)
-      cFilters:= oEndPoint['key'] + = "'" + cId + "'"
+      cFilters:= oEndPoint['key'] + " = '" + cId + "'"
    EndIf
 
 Return ( cFilters )
@@ -341,6 +341,7 @@ Static Function GetContent( cQuery, cFields, cId, nPageSize, nPage )
    Local nTotal := 0
    Local nTotRet:= 0
    Local lHasNext:= .F.
+   Local cAliQry:= 'TMP_SQLITE'
 
    If DBSqlExec(cAliQry, cQuery, 'SQLITE_SYS')   
       
@@ -435,39 +436,3 @@ Return(oJson)
 
 
 
-User Function TstJSon
-   BeginContent var cJson
-      {  "caractere": "caractere", 
-         "numero": 123, 
-         "logico":true, 
-         "matriz":[ 
-            { "posicao":1 }, { "posicao":2 } 
-         ] 
-      }
-   EndContent
-   ObjectJSON:= FromJSon(cJson)
-REturn
-
-// U_TSTSqlite
-User Function TSTSqlite
-   RpcSetEnv('99','01')
-   //cAlias:= "SIX"
-   cFields:= Nil
-   cSearch   := ''     
-   cParams   := ''     
-   aURLParms := {}        
-   nPageSize := 10       
-   nPage     := 1  
-   lForceRefresh:= .T.
-   cQryFields:= Nil
-   
-   aEval({ { 'SX2', SX2_FIELDS },{ 'SX3', SX3_FIELDS },{ 'SIX', SIX_FIELDS },{ 'SX6', SX6_FIELDS } }, {|x| ;
-      cAlias:= x[1], cQryFields:= x[2], ;
-      oResponse:= GetAliasContent( cAlias, cFields, cSearch, cParams, aURLParms, ;
-         nPageSize, nPage, cQryFields, lForceRefresh ) , ;
-      ConOut( oResponse:TojSon() ) ;
-   } )
-
-   RpcClearEnv()
-
-Return (Nil)
