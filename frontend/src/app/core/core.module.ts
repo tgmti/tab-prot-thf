@@ -5,6 +5,7 @@ import { PoI18nConfig, PoI18nModule } from '@portinari/portinari-ui';
 
 import { generalPt } from './i18n/general-pt';
 import { LiteralService } from './i18n/literal.service';
+import { HttpService } from './services/http.service';
 
 const i18nConfig: PoI18nConfig = {
   default: {
@@ -26,7 +27,8 @@ const i18nConfig: PoI18nConfig = {
     PoI18nModule.config(i18nConfig),
   ],
   providers: [
-    LiteralService
+    LiteralService,
+    HttpService,
   ],
 })
 export class CoreModule { }

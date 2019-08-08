@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { PoPageAction, PoTableColumn } from '@portinari/portinari-ui';
 
 import { LiteralService } from '../core/i18n/literal.service';
+import { ParamsService } from '../params.service';
+import { HttpService } from '../core/services/http.service';
 
 @Component({
   selector: 'app-params',
@@ -21,11 +23,13 @@ export class ParamsComponent implements OnInit {
 
   items: Array<any> = [];
 
-  constructor(private literalService: LiteralService) {
+  constructor(private literalService: LiteralService,
+              private http: HttpService) {
     this.literals = this.literalService.literals;
   }
 
   ngOnInit() {
+    
     this.columns = [
       { property: 'x6_fil', label: this.literals['branch'] },
       { property: 'x6_var', label: this.literals['param'] },
@@ -34,23 +38,15 @@ export class ParamsComponent implements OnInit {
       { property: 'x6_conteud', label: this.literals['content'] },
       { property: 'x6_propri', label: this.literals['property'] },
     ];
-  
-    this.items = [
-      { x6_fil: '01',
-        x6_var: 'MV_PAR01',
-        x6_tipo: 'L',
-        x6_descric: 'Descricao do parametro',
-        x6_conteud: '.T.',
-        x6_propri: 'U',
-      },
-      { x6_fil: '01',
-        x6_var: 'MV_PAR01',
-        x6_tipo: 'L',
-        x6_descric: 'Descricao do parametro',
-        x6_conteud: '.T.',
-        x6_propri: 'U',
-      },
-    ];
+
+    this.http.get('/params')
+    .subscribe(response => {
+      console.log('getParams: ', response);
+      this.items = response.items;
+     },
+      error => console.error('Erro ao buscar parâmetros', error)
+    );
+
    }
 
 }
