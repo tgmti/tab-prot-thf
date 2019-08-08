@@ -8,11 +8,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CoreModule } from './core/core.module';
 import { ParamsComponent } from './params/params.component';
+import { SharedModule } from './shared/shared.module';
+import { TablesComponent } from './tables/tables.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ParamsComponent
+    ParamsComponent,
+    TablesComponent
   ],
   imports: [
     BrowserModule,
@@ -20,6 +23,7 @@ import { ParamsComponent } from './params/params.component';
     PoModule,
     RouterModule.forRoot([]),
     CoreModule,
+    SharedModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

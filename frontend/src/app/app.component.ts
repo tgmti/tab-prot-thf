@@ -11,6 +11,7 @@ export class AppComponent {
 
   readonly menus: Array<PoMenuItem> = [
     { label: 'Home', action: this.onClick.bind(this) },
+    { label: 'Tabelas', link: '/tables' },
     { label: 'Parâmetros', link: '/params' },
   ];
 
