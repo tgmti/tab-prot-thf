@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { PoPageAction, PoTableColumn } from '@portinari/portinari-ui';
 
+import { LiteralService } from '../core/i18n/literal.service';
+
 @Component({
   selector: 'app-params',
   templateUrl: './params.component.html',
@@ -9,24 +11,30 @@ import { PoPageAction, PoTableColumn } from '@portinari/portinari-ui';
 })
 export class ParamsComponent implements OnInit {
 
+  public literals: object;
+
   readonly actions: Array<PoPageAction> = [
     // actions of table here
   ];
 
-  readonly columns: Array<PoTableColumn> = [
-    { property: 'x6_fil', label: 'Filial'},
-    { property: 'x6_var', label: 'Parâmetro'},
-    { property: 'x6_tipo', label: 'Tipo' },
-    { property: 'x6_descric', label: 'Descrição'},
-    { property: 'x6_conteud', label: 'Conteúdo'},
-    { property: 'x6_propri', label: 'Propriedade' },
-  ];
+  columns: Array<PoTableColumn>;
 
   items: Array<any> = [];
 
-  constructor() { }
+  constructor(private literalService: LiteralService) {
+    this.literals = this.literalService.literals;
+  }
 
   ngOnInit() {
+    this.columns = [
+      { property: 'x6_fil', label: this.literals['branch'] },
+      { property: 'x6_var', label: this.literals['param'] },
+      { property: 'x6_tipo', label: this.literals['type'] },
+      { property: 'x6_descric', label: this.literals['description'] },
+      { property: 'x6_conteud', label: this.literals['content'] },
+      { property: 'x6_propri', label: this.literals['property'] },
+    ];
+  
     this.items = [
       { x6_fil: '01',
         x6_var: 'MV_PAR01',
