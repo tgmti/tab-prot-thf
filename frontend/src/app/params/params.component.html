@@ -1,12 +1,5 @@
-<po-page-list p-title="{{ literals?.params }}" [p-actions]="actions">
-
-  <po-table
-    p-container
-    p-sort="true"
-    p-striped="true"
+<app-dynamic-search-page
+    p-title="{{ literals?.params }}"
     [p-columns]="columns"
     [p-items]="items"
-    [p-height]="400">
-  </po-table>
-
-</po-page-list>
+></app-dynamic-search-page>

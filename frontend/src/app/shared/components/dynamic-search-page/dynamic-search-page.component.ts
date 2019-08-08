@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { PoBreadcrumb } from '@portinari/portinari-ui';
+import { PoBreadcrumb, PoTableColumn } from '@portinari/portinari-ui';
 
 @Component({
   selector: 'app-dynamic-search-page',
@@ -10,9 +10,23 @@ import { PoBreadcrumb } from '@portinari/portinari-ui';
 })
 export class DynamicSearchPageComponent implements OnInit {
 
-  @Input('p-title') title?: string = 'Dynamic Search Page';
+  private title: string;
+  public items: Array<PoTableColumn>;
+  public columns: Array<PoTableColumn> = [];
+  public breadcrumb: PoBreadcrumb;
 
-  private breadcrumb: PoBreadcrumb;
+  @Input('p-title') set setTitle(title) {
+    this.title = title;
+  }
+
+  @Input('p-items') set setItems(items) {
+    this.items = items;
+  }
+
+  @Input('p-columns') set setColumns(columns) {
+    this.columns = columns;
+  }
+
 
   constructor(private router: Router) {  }
 
