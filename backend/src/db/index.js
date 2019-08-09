@@ -10,5 +10,5 @@ const configdb = {
 
 const pool = new Pool(configdb)
 module.exports = {
-  query: (sql, params) => pool.query(sql, params)
+  query: async (sql, params) => await pool.query(sql, params)
 }
