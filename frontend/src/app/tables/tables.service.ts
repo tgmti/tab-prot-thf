@@ -18,7 +18,9 @@ export class TablesService {
   }
 
   get(): Observable<any> {
-    return this.http.get('/tables');
+    return this.http.get('/tables', {
+      fields: this.getColumns().map(f => f.property).join(',')
+    });
   }
 
   getColumns(): Array<PoTableColumn> {

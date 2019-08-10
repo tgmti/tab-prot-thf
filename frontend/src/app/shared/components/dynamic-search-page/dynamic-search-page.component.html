@@ -6,9 +6,14 @@
         p-container
         p-sort="true"
         p-striped="true"
+        p-container="shadow"
+        p-hide-text-overflow="true"
         [p-columns]="columns"
         [p-items]="items"
-        [p-height]="400">
+        [p-height]="400"
+        [p-loading]="isLoading"
+        [p-show-more-disabled]="!hasNext"
+    >
     </po-table>
     
 </po-page-dynamic-search>  

@@ -13,6 +13,8 @@ import { TablesService } from './tables.service';
 export class TablesComponent implements OnInit {
 
   public literals: object;
+  public isLoading: boolean;
+  public hasNext: boolean;
 
   readonly actions: Array<PoPageAction> = [
     // actions of table here
@@ -28,12 +30,13 @@ export class TablesComponent implements OnInit {
   }
 
   ngOnInit() {
-
-    this.tablesService.get()
-    .subscribe(response => {
+    this.isLoading = true;
+    this.tablesService.get().subscribe(response => {
       this.items = response.items;
-     },
-      error => console.error('Erro ao buscar Tabelas', error)
+      this.hasNext = response.hasNext;
+    },
+    error => console.error('Erro ao buscar Tabelas', error),
+    () => this.isLoading = false
     );
 
    }

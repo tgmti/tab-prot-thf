@@ -14,6 +14,8 @@ export class DynamicSearchPageComponent implements OnInit {
   public items: Array<PoTableColumn>;
   public columns: Array<PoTableColumn> = [];
   public breadcrumb: PoBreadcrumb;
+  public isLoading: boolean;
+  public hasNext: boolean;
 
   @Input('p-title') set setTitle(title) {
     this.title = title;
@@ -27,6 +29,9 @@ export class DynamicSearchPageComponent implements OnInit {
     this.columns = columns;
   }
 
+  @Input('p-loading') set setLoading(isLoading) {
+    this.isLoading = isLoading;
+  }
 
   constructor(private router: Router) {  }
 
