@@ -8,6 +8,8 @@ const configdb = {
     port: 5432,
 };
 
+const company = '99'
+
 const paramsSchema = ['X6_FIL', 'X6_VAR', 'X6_TIPO', 'X6_DESCRIC', 'X6_CONTEUD', 'X6_PROPRI'];
 
 
@@ -22,7 +24,7 @@ async function query(table, fieldsDefault, request, response) {
     try {
 
         const page = parseInt(request.query.page) || 1;
-        const pageSize = Math.min(parseInt(request.pageSize) || 20, 200); // Default 20, máximo 200 registros por query
+        const pageSize = Math.min(parseInt(request.query.pageSize) || 20, 200); // Default 20, máximo 200 registros por query
         const id = request.id;
 
         const fieldsNormalized = normalizedefaultFields(fieldsDefault);
@@ -31,19 +33,22 @@ async function query(table, fieldsDefault, request, response) {
         const filtersQuery = whereFields(request.query, defaultFieldsNames);
         const fieldsOrder = orderFields(request.query.order, defaultFieldsNames);
     
-        const {queryText, queryParams} = mountQuery(table, fieldsSelect, filtersQuery, fieldsOrder, page, pageSize);
+        const query = mountQuery(table, fieldsSelect, filtersQuery, fieldsOrder, page, pageSize);
         
         const pool = new Pool(configdb);
         
-        const { rows } = await pool.query(queryText, queryParams);
+        
+        const result = await pool.query(query);
+        // console.log(result);
+        const { rows } = result;
         const hasNext = rows.length > pageSize;
         const items = rows.slice(0, pageSize)
         
         response.json({ hasNext, items });
 
     } catch (error) {
-        console.error(`Error get: ${table}`, error);
-        response.status(400).send(error);
+        console.error(`Error on get: ${table}${company}0`, error);
+        response.status(400).json({ message: `Error on get: ${table}${company}0`, stack: error.stack } );
     }
 
 }
@@ -96,12 +101,12 @@ function orderFields(fields, defNames) {
 function whereFields(fields, defNames) {
     
     if (fields) {
-        //TODO: ainda analisar
+        
+        //TODO: tratar command para os campos que não são texto
         const whereFields = Object.keys(fields)
-            .map(name => ({name: name.toUpperCase(), value: fields[name]}) )
-            .map(f=> f.trim().toUpperCase())
-            .filter(f => defNames.includes( f.split(' ')[0]));
-            
+        .map(name => ({ name: name.trim().toUpperCase(), command: 'LIKE', value: fields[name] }) )
+        .filter(f => defNames.includes( f.name ));
+        
         if (whereFields && whereFields.length) 
             return whereFields;
     }
@@ -114,30 +119,32 @@ function whereFields(fields, defNames) {
 // Monta a query SQL
 function mountQuery(table, select, where, order, page, pageSize) {
     
-    const fields = select.map(f=> f.type === 'C' ? 
-        `TRIM(${f.name}) AS ${f.name}` : f.name ).join(', ');
+    const fields = select.map(f=> f.type === 'C' ? `TRIM(${f.name}) AS ${f.name}` : f.name ).join(', ');
     
-    let queryParams;
-    let queryText = `SELECT ${fields}
-        FROM ${table}990
-        WHERE D_E_L_E_T_ = ' '`;
+    let values = [];
+    let query = ''
+    
+    query+= ` SELECT ${fields}`
+    query+= ` FROM ${table}${company}0 ${table}`
+    query+= ` WHERE ${table}.D_E_L_E_T_ = ' '`;
 
     if ( where.length > 0) {
-        queryText+= ' AND '
-        //queryText+= where.map(f = f.name + f.command &LIKE OR =&)
-
-        // tratar queryParams
-
+        // TODO: Tratar campos que não são texto
+        query+= ` AND ${where.map(f => {
+            values.push(f.value);
+            return `${f.name} = $${values.length} `
+            // return `${f.name} ${f.command} '%$${values.length}%' `
+        })}`
     }
 
-    queryText+= `
-    ORDER BY ${ order.length > 0 ? order.join(', ') : '1, 2'}`;
+    query+= ` ORDER BY ${ order.length > 0 ? order.join(', ') : '1, 2'}`;
     
-    queryText+= `
+    query+= `
     LIMIT ${pageSize + 1}
     OFFSET ${(page -1) * pageSize}`
     
-    console.log(queryText);
-
-    return {queryText, queryParams};
+    
+    console.info(query, values);
+    //{text:'SELECT * FROM SX6990 WHERE X6_VAR = $1', values: ['MV_ESPECIE']}
+    return { text: query, values };
 }
