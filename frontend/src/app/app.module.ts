@@ -10,12 +10,16 @@ import { CoreModule } from './core/core.module';
 import { ParamsComponent } from './params/params.component';
 import { SharedModule } from './shared/shared.module';
 import { TablesComponent } from './tables/tables.component';
+import { IndexesComponent } from './indexes/indexes.component';
+import { FieldsComponent } from './fields/fields.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     ParamsComponent,
-    TablesComponent
+    IndexesComponent,
+    TablesComponent,
+    FieldsComponent
   ],
   imports: [
     BrowserModule,

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 
 import { PoPageAction, PoTableColumn } from '@portinari/portinari-ui';
 
-import { ParamsService } from '../params.service';
+import { ParamsService } from './params.service';
 
 @Component({
   selector: 'app-params',

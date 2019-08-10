@@ -3,8 +3,8 @@ import { Observable } from 'rxjs';
 
 import { PoTableColumn } from '@portinari/portinari-ui';
 
-import { HttpService } from './core/services/http.service';
-import { LiteralService } from './core/i18n/literal.service';
+import { HttpService } from '../core/services/http.service';
+import { LiteralService } from '../core/i18n/literal.service';
 
 @Injectable({
   providedIn: 'root'
