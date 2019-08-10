@@ -1,11 +1,11 @@
 const express = require('express');
 
-const ParamsController = require('../controllers/ParamsController');
+const controllers = require('../controllers');
 
 const routes = express.Router();
 
 routes.get('/', (request, response) => response.json({message: 'API Tabelas Protheus'}));
-routes.get('/params', ParamsController.getParams);
+routes.get('/params', controllers.getParams);
 routes.get('/params/:id', (request, response) => {
     console.log(request);
     return response.json({ok:'ok'})
