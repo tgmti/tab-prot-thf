@@ -10,12 +10,27 @@ const configdb = {
 
 const company = '99'
 
-const paramsSchema = ['X6_FIL', 'X6_VAR', 'X6_TIPO', 'X6_DESCRIC', 'X6_CONTEUD', 'X6_PROPRI'];
-
+const ParamsSchema = ['X6_FIL', 'X6_VAR', 'X6_TIPO', 'X6_DESCRIC', 'X6_CONTEUD', 'X6_PROPRI'];
+const TablesSchema = ['X2_CHAVE', 'X2_NOME', 'X2_MODO', 'X2_MODOUN', 'X2_MODOEMP', 'X2_UNICO'];
+const IndexesSchema= ['INDICE','ORDEM','CHAVE','DESCRICAO','PROPRI','F3','NICKNAME','SHOWPESQ','IX_VIRTUAL','IX_VIRCUST'];
+const FieldsSchema = ['X3_ARQUIVO','X3_ORDEM','X3_CAMPO','X3_TIPO',
+    'X3_TITULO','X3_DESCRIC','X3_PICTURE','X3_VALID','X3_RELACAO','X3_F3','X3_RESERV','X3_TRIGGER','X3_PROPRI',
+    'X3_BROWSE','X3_VISUAL','X3_CONTEXT','X3_OBRIGAT','X3_VLDUSER','X3_CBOX','X3_PICTVAR','X3_WHEN','X3_INIBRW',
+    'X3_GRPSXG','X3_FOLDER',{name: 'X3_TAMANHO', type: 'N'},{name: 'X3_DECIMAL', type: 'N'},
+];
 
 module.exports = {
     getParams(request, response) {
-        return query('SX6', paramsSchema, request, response);
+        return query('SX6', ParamsSchema, request, response);
+    },
+    getTables(request, response) {
+        return query('SX2', TablesSchema, request, response);
+    },
+    getFields(request, response) {
+        return query('SX3', FieldsSchema, request, response);
+    },
+    getIndexes(request, response) {
+        return query('SIX', IndexesSchema, request, response);
     }
 };
 

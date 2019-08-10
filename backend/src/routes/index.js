@@ -4,14 +4,11 @@ const controllers = require('../controllers');
 
 const routes = express.Router();
 
-routes.get('/', (request, response) => response.json({message: 'API Tabelas Protheus'}));
+routes.get('/', (req,res) => response.json({message: 'API Tabelas Protheus'}));
 routes.get('/params', controllers.getParams);
-routes.get('/params/:id', (request, response) => {
-    console.log(request);
-    return response.json({ok:'ok'})
-});
-routes.get('/tables', (request, response) => response.json({message: 'Returns Tables'}));
-routes.get('/fields', (request, response) => response.json({message: 'Returns Fields'}));
-routes.get('/indexes', (request, response) => response.json({message: 'Returns indexes'}));
+routes.get('/params/:id', (req,res) => response.json({message: 'Returns a Param - in progress...'}));
+routes.get('/tables', controllers.getTables);
+routes.get('/fields', controllers.getFields);
+routes.get('/indexes',controllers.getIndexes);
 
 module.exports = routes;
