@@ -17,6 +17,7 @@ export class HttpService {
     private readonly URL_API = environment.url_api;
 
     protected endpoint: string;
+    protected literalContext: string;
     protected columns: Array<PoTableColumn>;
 
     public literals: object;

@@ -3,9 +3,14 @@ import { CommonModule } from '@angular/common';
 
 import { PoI18nConfig, PoI18nModule } from '@portinari/portinari-ui';
 
-import { generalPt } from './i18n/general-pt';
 import { LiteralService } from './i18n/literal.service';
 import { HttpService } from './services/http.service';
+
+import { generalPt } from './i18n/general-pt';
+import { tablesPt } from './i18n/tables-pt';
+import { fieldsPt } from './i18n/fields-pt';
+import { indexesPt } from './i18n/indexes-pt';
+import { paramsPt } from './i18n/params-pt';
 
 const i18nConfig: PoI18nConfig = {
   default: {
@@ -16,6 +21,19 @@ const i18nConfig: PoI18nConfig = {
   contexts: {
     general: {
       'pt-BR': generalPt
+    },
+    tables: {
+      'pt-BR': tablesPt
+    },
+    fields: {
+      'pt-BR': fieldsPt
+    },
+    indexes: {
+      'pt-BR': indexesPt
+    },
+    params: {
+      'pt-BR': paramsPt
+      
     },
   }
 };

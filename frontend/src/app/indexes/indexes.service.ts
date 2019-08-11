@@ -14,17 +14,19 @@ export class IndexesService extends HttpService {
 
     this.endpoint = '/indexes';
 
+    this.literals = {...this.literals, ...literalService.indexes};
+
     this.columns = [
-      { property: 'indice', label: this.literals['description']},
-      { property: 'ordem', label: this.literals['description']},
-      { property: 'chave', label: this.literals['description']},
-      { property: 'descricao', label: this.literals['description']},
-      { property: 'propri', label: this.literals['description']},
-      { property: 'f3', label: this.literals['description']},
-      { property: 'nickname', label: this.literals['description']},
-      { property: 'showpesq', label: this.literals['description']},
-      { property: 'ix_virtual', label: this.literals['description']},
-      { property: 'ix_vircust', label: this.literals['description']},
+      { property: 'indice', label: this.literals['indice']},
+      { property: 'ordem', label: this.literals['ordem']},
+      { property: 'chave', label: this.literals['chave']},
+      { property: 'descricao', label: this.literals['descricao']},
+      { property: 'propri', label: this.literals['propri']},
+      { property: 'f3', label: this.literals['f3']},
+      { property: 'nickname', label: this.literals['nickname']},
+      { property: 'showpesq', label: this.literals['showpesq']},
+      { property: 'ix_virtual', label: this.literals['ix_virtual']},
+      { property: 'ix_vircust', label: this.literals['ix_vircust']},
     ];
   }
 
