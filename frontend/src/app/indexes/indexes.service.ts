@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-
-import { PoTableColumn } from '@portinari/portinari-ui';
+import { HttpClient } from '@angular/common/http';
 
 import { HttpService } from '../core/services/http.service';
 import { LiteralService } from '../core/i18n/literal.service';
@@ -9,20 +7,14 @@ import { LiteralService } from '../core/i18n/literal.service';
 @Injectable({
   providedIn: 'root'
 })
-export class IndexesService {
+export class IndexesService extends HttpService {
 
-  public literals: object;
+  constructor(http: HttpClient, literalService: LiteralService) {
+    super(http, literalService);
 
-  constructor(private http: HttpService,private literalService: LiteralService) {
-    this.literals = this.literalService.literals;
-  }
+    this.endpoint = '/indexes';
 
-  get(): Observable<any> {
-    return this.http.get('/indexes');
-  }
-
-  getColumns(): Array<PoTableColumn> {
-    return [
+    this.columns = [
       { property: 'indice', label: this.literals['description']},
       { property: 'ordem', label: this.literals['description']},
       { property: 'chave', label: this.literals['description']},

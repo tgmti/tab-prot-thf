@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-
-import { PoTableColumn } from '@portinari/portinari-ui';
+import { HttpClient } from '@angular/common/http';
 
 import { HttpService } from '../core/services/http.service';
 import { LiteralService } from '../core/i18n/literal.service';
@@ -9,20 +7,14 @@ import { LiteralService } from '../core/i18n/literal.service';
 @Injectable({
   providedIn: 'root'
 })
-export class ParamsService {
+export class ParamsService extends HttpService {
 
-  public literals: object;
+  constructor(http: HttpClient, literalService: LiteralService) {
+    super(http, literalService);
 
-  constructor(private http: HttpService,private literalService: LiteralService) {
-    this.literals = this.literalService.literals;
-  }
+    this.endpoint = '/params';
 
-  get(): Observable<any> {
-    return this.http.get('/params');
-  }
-
-  getColumns(): Array<PoTableColumn> {
-    return [
+    this.columns = [
       { property: 'x6_fil', label: this.literals['branch'] },
       { property: 'x6_var', label: this.literals['param'] },
       { property: 'x6_tipo', label: this.literals['type'] },

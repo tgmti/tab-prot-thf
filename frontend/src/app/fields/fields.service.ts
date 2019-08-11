@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-
-import { PoTableColumn } from '@portinari/portinari-ui';
+import { HttpClient } from '@angular/common/http';
 
 import { HttpService } from '../core/services/http.service';
 import { LiteralService } from '../core/i18n/literal.service';
@@ -9,20 +7,14 @@ import { LiteralService } from '../core/i18n/literal.service';
 @Injectable({
   providedIn: 'root'
 })
-export class FieldsService {
+export class FieldsService extends HttpService {
 
-  public literals: object;
+  constructor(http: HttpClient, literalService: LiteralService) {
+    super(http, literalService);
 
-  constructor(private http: HttpService,private literalService: LiteralService) {
-    this.literals = this.literalService.literals;
-  }
+    this.endpoint = '/fields';
 
-  get(): Observable<any> {
-    return this.http.get('/fields');
-  }
-
-  getColumns(): Array<PoTableColumn> {
-    return [
+    this.columns = [
       { property: 'x3_arquivo', label: this.literals['field'] },
       { property: 'x3_ordem', label: this.literals['field'] },
       { property: 'x3_campo', label: this.literals['field'], width: '10%' },

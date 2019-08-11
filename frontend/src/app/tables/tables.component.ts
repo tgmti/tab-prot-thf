@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-
-import { PoPageAction, PoTableColumn } from '@portinari/portinari-ui';
+import { Component } from '@angular/core';
 
 import { TablesService } from './tables.service';
 
 @Component({
   selector: 'app-tables',
-  templateUrl: './tables.component.html',
   styleUrls: ['./tables.component.css'],
-  providers: [TablesService]
+  providers: [TablesService],
+  template: `
+<app-dynamic-search-page
+  [p-service]="tablesService"
+></app-dynamic-search-page>
+  `,
 })
 export class TablesComponent {
 

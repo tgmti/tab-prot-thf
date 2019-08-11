@@ -1,41 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-
-import { PoPageAction, PoTableColumn } from '@portinari/portinari-ui';
+import { Component } from '@angular/core';
 
 import { IndexesService } from './indexes.service';
 
 @Component({
   selector: 'app-indexes',
-  templateUrl: './indexes.component.html',
   styleUrls: ['./indexes.component.css'],
-  providers: [IndexesService]
+  providers: [IndexesService],
+  template: `
+<app-dynamic-search-page
+  [p-service]="indexesService"
+></app-dynamic-search-page>
+  `,
 })
-export class IndexesComponent implements OnInit {
+export class IndexesComponent {
 
-  public literals: object;
-
-  readonly actions: Array<PoPageAction> = [
-    // actions of table here
-  ];
-
-  columns: Array<PoTableColumn>;
-
-  items: Array<any> = [];
-
-  constructor(private indexesService: IndexesService) {
-    this.literals = this.indexesService.literals;
-    this.columns = this.indexesService.getColumns();
-  }
-
-  ngOnInit() {
-
-    this.indexesService.get()
-    .subscribe(response => {
-      this.items = response.items;
-     },
-      error => console.error('Erro ao buscar Índices', error)
-    );
-
-   }
+  constructor(public indexesService: IndexesService) {}
 
 }

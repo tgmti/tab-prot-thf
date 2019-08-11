@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 
 import { HttpService } from '../core/services/http.service';
 import { LiteralService } from '../core/i18n/literal.service';
@@ -26,4 +25,3 @@ export class TablesService extends HttpService {
   }
 
 }
-
