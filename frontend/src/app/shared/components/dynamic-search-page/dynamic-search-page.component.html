@@ -1,6 +1,10 @@
 <po-page-dynamic-search
-    [p-title]="title" 
+    [p-title]="title"
     [p-breadcrumb]="breadcrumb"
+    [p-filters]="filters"
+    (p-quick-search)="onQuickSearch($event)"
+    (p-change-disclaimers)="onChangeDisclaimers($event)"
+    (p-advanced-search)="onAdvancedSearch($event)"    
 >
     <po-table
         p-container

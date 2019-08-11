@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { PoBreadcrumb, PoTableColumn } from '@portinari/portinari-ui';
+import { PoBreadcrumb, PoTableColumn, PoDynamicFormField } from '@portinari/portinari-ui';
 
 @Component({
   selector: 'app-dynamic-search-page',
@@ -10,14 +10,17 @@ import { PoBreadcrumb, PoTableColumn } from '@portinari/portinari-ui';
 })
 export class DynamicSearchPageComponent implements OnInit {
 
-  private title: string;
-  private isLoading: boolean;
+  public title: string;
+  public isLoading: boolean;
 
-  private items: Array<PoTableColumn>;
-  private columns: Array<PoTableColumn> = [];
-  private breadcrumb: PoBreadcrumb;
-  private hasNext: boolean;
+  public items: Array<PoTableColumn>;
+  public columns: Array<PoTableColumn> = [];
+  public breadcrumb: PoBreadcrumb;
+  public hasNext: boolean;
+  public filters: Array<PoDynamicFormField>;
+  
   private service: any;
+  private queryParams: any;
 
   @Input('p-service') set setService(service) {
     this.service = service;
@@ -37,20 +40,38 @@ export class DynamicSearchPageComponent implements OnInit {
     };
 
     this.columns = this.service.getColumns();
+    this.filters = this.columns.map( f => ({
+      property: f.property, label: f.label
+    })
+    )
     this.getList();
   }
 
-  getList() {
+  getList(queryParams: any = { }) {
+
+    this.queryParams = queryParams;
 
     this.isLoading = true;
-    this.service.get().subscribe(response => {
+    this.service.get(queryParams).subscribe(response => {
       this.items = response.items;
       this.hasNext = response.hasNext;
     },
     error => console.error(`Erro ao buscar ${this.title}`, error),
     () => this.isLoading = false
     );
+  }
 
+  onQuickSearch(filter) {
+    this.getList({ page: 1, filter });
+  }
+
+  onChangeDisclaimers(disclaimers) {
+    const params = JSON.parse(`{ ${disclaimers.map(d => `"${d.property}": "${d.value}"` ).join(', ')} }`);
+    this.getList({ page: 1, ...params });
+  }
+
+  onAdvancedSearch(filters) {
+    this.getList({page: 1, ...filters});
   }
 
 }

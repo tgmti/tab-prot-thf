@@ -26,11 +26,11 @@ export class HttpService {
         this.literals = this.literalService.literals;
     }
 
-    get(endpoint: string, queryParams = {}): Observable<any> {
+    get(queryParams = {}): Observable<any> {
         const params = new HttpParams({
             fromObject: {...queryParams, fields: this.getColumns().map(f => f.property).join(',')}
           });
-        return this.http.get(`${this.URL_API}${endpoint || this.endpoint}`, { params });
+        return this.http.get(`${this.URL_API}${this.endpoint}`, { params });
     }
 
     getColumns(): Array<PoTableColumn> {

@@ -50,7 +50,6 @@ async function query(table, fieldsDefault, request, response) {
         
         
         const result = await pool.query(query);
-        // console.log(result);
         const { rows } = result;
         const hasNext = rows.length > pageSize;
         const items = rows.slice(0, pageSize)
@@ -138,6 +137,7 @@ function whereFields(fields, defaultFields) {
         const whereFields = Object.keys(fields)
             .filter(name => defNames.includes( name.trim().toUpperCase() ))
             .map(f => {
+                console.log(f)
                 const nameUpper = f.trim().toUpperCase();
                 const {type} = defaultFields.find(def => def.name === nameUpper);
                 const name = type === 'C' ? `UPPER(TRIM(${nameUpper}))` : nameUpper;
@@ -160,7 +160,6 @@ function whereFields(fields, defaultFields) {
 function mountQuery(table, select, where, order, page, pageSize) {
     
     const fields = select.map(f=> f.type === 'C' ? `TRIM(${f.name}) AS ${f.name}` : f.name ).join(', ');
-    console.log(select.map(f=> f.type === 'C' ? `TRIM(${f.name}) AS ${f.name}` : f.name ))
     let values = [];
     let query = ''
     
@@ -173,8 +172,8 @@ function mountQuery(table, select, where, order, page, pageSize) {
         query+= ` AND ${where.map(f => {
             values.push(f.value);
             return `${f.name} ${f.command} $${values.length} `
-            // return `${f.name} ${f.command} '%$${values.length}%' `
-        })}`
+        }).join(' AND ') } `;
+
     }
 
     query+= ` ORDER BY ${ order.length > 0 ? order.join(', ') : '1, 2'}`;
