@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  url_api: 'http://192.168.15.3:3333',
+  url_api: window.location.origin.split(':').slice(0, 2).join(':') + ':3333',
 };
 
 /*
