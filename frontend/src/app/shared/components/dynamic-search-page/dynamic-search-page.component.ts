@@ -13,7 +13,7 @@ export class DynamicSearchPageComponent implements OnInit {
   public title: string;
   public isLoading: boolean;
 
-  public items: Array<PoTableColumn>;
+  public items: Array<PoTableColumn> = [];
   public columns: Array<PoTableColumn> = [];
   public breadcrumb: PoBreadcrumb;
   public hasNext: boolean;
@@ -53,7 +53,7 @@ export class DynamicSearchPageComponent implements OnInit {
 
     this.isLoading = true;
     this.service.get(queryParams).subscribe(response => {
-      this.items = response.items;
+      this.items = [...this.items, ...response.items];
       this.hasNext = response.hasNext;
     },
     error => console.error(`Erro ao buscar ${this.title}`, error),
@@ -62,16 +62,23 @@ export class DynamicSearchPageComponent implements OnInit {
   }
 
   onQuickSearch(filter) {
+    this.items = [];
     this.getList({ page: 1, filter });
   }
-
+  
   onChangeDisclaimers(disclaimers) {
-    const params = JSON.parse(`{ ${disclaimers.map(d => `"${d.property}": "${d.value}"` ).join(', ')} }`);
+    this.items = [];
+    const params = JSON.parse('{' + disclaimers.map(d => `"${d.property}": "${d.value}"` ).join(', ') + '}');
     this.getList({ page: 1, ...params });
   }
-
+  
   onAdvancedSearch(filters) {
+    this.items = [];
     this.getList({page: 1, ...filters});
+  }
+
+  onShowMore() {
+    this.getList({...this.queryParams, page: 1 + (this.queryParams.page || 0) } );
   }
 
 }
