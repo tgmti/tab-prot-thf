@@ -17,16 +17,17 @@ export class IndexesService extends HttpService {
     this.literals = {...this.literals, ...literalService.indexes};
 
     this.columns = [
-      { property: 'indice', label: this.literals['indice']},
-      { property: 'ordem', label: this.literals['ordem']},
-      { property: 'chave', label: this.literals['chave']},
-      { property: 'descricao', label: this.literals['descricao']},
-      { property: 'propri', label: this.literals['propri']},
-      { property: 'f3', label: this.literals['f3']},
-      { property: 'nickname', label: this.literals['nickname']},
-      { property: 'showpesq', label: this.literals['showpesq']},
-      { property: 'ix_virtual', label: this.literals['ix_virtual']},
-      { property: 'ix_vircust', label: this.literals['ix_vircust']},
+      { property: 'indice', label: this.literals['indice'], width: '80px' },
+      { property: 'ordem', label: this.literals['ordem'], width: '20px'},
+      { property: 'chave', label: this.literals['chave'], width: '100px'},
+      { property: 'descricao', label: this.literals['descricao'], width: '150px'},
+      { property: 'propri', label: this.literals['propri'], width: '60px',
+        type: 'subtitle', subtitles: [
+          { value: 'S', color: 'color-08', label: 'Sistema', content: 'S' },
+          { value: 'U', color: 'color-11', label: 'Usuário', content: 'U' },
+        ]
+      },
+      { property: 'nickname', label: this.literals['nickname'], width: '60px' },
     ];
   }
 
