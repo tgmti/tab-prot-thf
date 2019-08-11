@@ -1,5 +1,5 @@
 export const paramsPt = {
-    title: 'Tabelas',
+    title: 'Parâmetros',
     x6_fil: 'Filial',
     x6_var: 'Parâmetro',
     x6_tipo: 'Tipo',

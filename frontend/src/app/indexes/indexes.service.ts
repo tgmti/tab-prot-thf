@@ -17,7 +17,7 @@ export class IndexesService extends HttpService {
     this.literals = {...this.literals, ...literalService.indexes};
 
     this.columns = [
-      { property: 'indice', label: this.literals['indice'], width: '80px' },
+      { property: 'indice', label: this.literals['indice'], width: '60px' },
       { property: 'ordem', label: this.literals['ordem'], width: '20px'},
       { property: 'chave', label: this.literals['chave'], width: '100px'},
       { property: 'descricao', label: this.literals['descricao'], width: '150px'},
