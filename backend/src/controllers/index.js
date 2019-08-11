@@ -10,14 +10,10 @@ const configdb = {
 
 const company = '99'
 
-const ParamsSchema = ['X6_FIL', 'X6_VAR', 'X6_TIPO', 'X6_DESCRIC', 'X6_CONTEUD', 'X6_PROPRI'];
-const TablesSchema = ['X2_CHAVE', 'X2_NOME', 'X2_MODO', 'X2_MODOUN', 'X2_MODOEMP', 'X2_UNICO'];
-const IndexesSchema= ['INDICE','ORDEM','CHAVE','DESCRICAO','PROPRI','F3','NICKNAME','SHOWPESQ','IX_VIRTUAL','IX_VIRCUST'];
-const FieldsSchema = ['X3_ARQUIVO','X3_ORDEM','X3_CAMPO','X3_TIPO',
-    'X3_TITULO','X3_DESCRIC','X3_PICTURE','X3_VALID','X3_RELACAO','X3_F3','X3_RESERV','X3_TRIGGER','X3_PROPRI',
-    'X3_BROWSE','X3_VISUAL','X3_CONTEXT','X3_OBRIGAT','X3_VLDUSER','X3_CBOX','X3_PICTVAR','X3_WHEN','X3_INIBRW',
-    'X3_GRPSXG','X3_FOLDER',{name: 'X3_TAMANHO', type: 'N'},{name: 'X3_DECIMAL', type: 'N'},
-];
+const ParamsSchema = require('./ParamsSchema');
+const TablesSchema = require('./TablesSchema');
+const IndexesSchema= require('./IndexesSchema');
+const FieldsSchema = require('./FieldsSchema');
 
 module.exports = {
     getParams(request, response) {
@@ -43,12 +39,12 @@ async function query(table, fieldsDefault, request, response) {
         const id = request.id;
 
         const fieldsNormalized = normalizedefaultFields(fieldsDefault);
-        const defaultFieldsNames = fieldsNormalized.map(f => f.name)
         const fieldsSelect = selectFields(request.query.fields, fieldsNormalized);
-        const filtersQuery = whereFields(request.query, defaultFieldsNames);
-        const fieldsOrder = orderFields(request.query.order, defaultFieldsNames);
-    
-        const query = mountQuery(table, fieldsSelect, filtersQuery, fieldsOrder, page, pageSize);
+        const filter = filterFields(request.query.filter, fieldsNormalized);
+        const fieldsWhere = [...filter,...whereFields(request.query, fieldsNormalized)];
+        const fieldsOrder = orderFields(request.query.order, fieldsNormalized);
+
+        const query = mountQuery(table, fieldsSelect, fieldsWhere, fieldsOrder, page, pageSize);
         
         const pool = new Pool(configdb);
         
@@ -81,6 +77,7 @@ function normalizedefaultFields(fields) {
         name: f.name || f,
         type: f.type || 'C',
         id: f.id || false,
+        canFilter: f.canFilter || false,
     }));
 }
 
@@ -99,9 +96,10 @@ function selectFields(fields, defaultFields) {
 }
 
 // Retorna os campos de ordenação devidamente normalizados e com a instrução decrescente quando necessário
-function orderFields(fields, defNames) {
+function orderFields(fields, defaultFields) {
     
     if (fields) {
+        const defNames = defaultFields.map(f => f.name);
         const orderFields = normalizeFields(fields)
             .map(f=> f.slice(0,1) === '-' ? `${f.slice(1)} DESC` : f )
             .filter(f => defNames.includes( f.split(' ')[0]));
@@ -113,14 +111,41 @@ function orderFields(fields, defNames) {
     return [];
 }
 
-function whereFields(fields, defNames) {
+// Monta o comando de filtro
+function filterFields(filter, defaultFields) {
+
+    if (filter) {
+        return [{ 
+            name: defaultFields.filter(f => f.canFilter )
+            .map( f=> `UPPER(TRIM(${f.name}))` )
+            .join('||'),
+            command: 'LIKE',
+            value: `%${filter.trim().toUpperCase()}%`
+        }];
+    }
     
+    return [];
+}
+
+// Organiza os campos que serão passados para a Cláusula Where
+function whereFields(fields, defaultFields) {
+    
+    const defNames = defaultFields.map(f => f.name);
+
     if (fields) {
         
         //TODO: tratar command para os campos que não são texto
         const whereFields = Object.keys(fields)
-        .map(name => ({ name: name.trim().toUpperCase(), command: 'LIKE', value: fields[name] }) )
-        .filter(f => defNames.includes( f.name ));
+            .filter(name => defNames.includes( name.trim().toUpperCase() ))
+            .map(f => {
+                const nameUpper = f.trim().toUpperCase();
+                const {type} = defaultFields.find(def => def.name === nameUpper);
+                const name = type === 'C' ? `UPPER(TRIM(${nameUpper}))` : nameUpper;
+                const command = type === 'C' ? 'LIKE' : '=';
+                const value = type === 'C' ? `%${fields[f].trim().toUpperCase()}%` : fields[f];
+
+                return { name, command, value };
+            });
         
         if (whereFields && whereFields.length) 
             return whereFields;
@@ -135,7 +160,7 @@ function whereFields(fields, defNames) {
 function mountQuery(table, select, where, order, page, pageSize) {
     
     const fields = select.map(f=> f.type === 'C' ? `TRIM(${f.name}) AS ${f.name}` : f.name ).join(', ');
-    
+    console.log(select.map(f=> f.type === 'C' ? `TRIM(${f.name}) AS ${f.name}` : f.name ))
     let values = [];
     let query = ''
     
@@ -147,7 +172,7 @@ function mountQuery(table, select, where, order, page, pageSize) {
         // TODO: Tratar campos que não são texto
         query+= ` AND ${where.map(f => {
             values.push(f.value);
-            return `${f.name} = $${values.length} `
+            return `${f.name} ${f.command} $${values.length} `
             // return `${f.name} ${f.command} '%$${values.length}%' `
         })}`
     }
