@@ -10,35 +10,8 @@ import { TablesService } from './tables.service';
   styleUrls: ['./tables.component.css'],
   providers: [TablesService]
 })
-export class TablesComponent implements OnInit {
+export class TablesComponent {
 
-  public literals: object;
-  public isLoading: boolean;
-  public hasNext: boolean;
-
-  readonly actions: Array<PoPageAction> = [
-    // actions of table here
-  ];
-
-  columns: Array<PoTableColumn>;
-
-  items: Array<any> = [];
-
-  constructor(private tablesService: TablesService) {
-    this.literals = this.tablesService.literals;
-    this.columns = this.tablesService.getColumns();
-  }
-
-  ngOnInit() {
-    this.isLoading = true;
-    this.tablesService.get().subscribe(response => {
-      this.items = response.items;
-      this.hasNext = response.hasNext;
-    },
-    error => console.error('Erro ao buscar Tabelas', error),
-    () => this.isLoading = false
-    );
-
-   }
+  constructor(public tablesService: TablesService) {}
 
 }

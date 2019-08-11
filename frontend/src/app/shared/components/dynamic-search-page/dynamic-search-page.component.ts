@@ -11,31 +11,23 @@ import { PoBreadcrumb, PoTableColumn } from '@portinari/portinari-ui';
 export class DynamicSearchPageComponent implements OnInit {
 
   private title: string;
-  public items: Array<PoTableColumn>;
-  public columns: Array<PoTableColumn> = [];
-  public breadcrumb: PoBreadcrumb;
-  public isLoading: boolean;
-  public hasNext: boolean;
+  private isLoading: boolean;
 
-  @Input('p-title') set setTitle(title) {
-    this.title = title;
-  }
+  private items: Array<PoTableColumn>;
+  private columns: Array<PoTableColumn> = [];
+  private breadcrumb: PoBreadcrumb;
+  private hasNext: boolean;
+  private service: any;
 
-  @Input('p-items') set setItems(items) {
-    this.items = items;
-  }
-
-  @Input('p-columns') set setColumns(columns) {
-    this.columns = columns;
-  }
-
-  @Input('p-loading') set setLoading(isLoading) {
-    this.isLoading = isLoading;
+  @Input('p-service') set setService(service) {
+    this.service = service;
   }
 
   constructor(private router: Router) {  }
 
   ngOnInit() {
+
+    this.title = this.service.literals['title'];
 
     this.breadcrumb = {
       items: [
@@ -43,6 +35,21 @@ export class DynamicSearchPageComponent implements OnInit {
         { label: this.title }
       ]
     };
+
+    this.columns = this.service.getColumns();
+    this.getList();
+  }
+
+  getList() {
+
+    this.isLoading = true;
+    this.service.get().subscribe(response => {
+      this.items = response.items;
+      this.hasNext = response.hasNext;
+    },
+    error => console.error(`Erro ao buscar ${this.title}`, error),
+    () => this.isLoading = false
+    );
 
   }
 
