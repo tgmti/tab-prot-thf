@@ -1,5 +1,8 @@
 # Tabelas Protheus
 
+Visualizar dicionário de dados do Protheus usando Angular + PortinariUI + Tema Totvs THF
+
+![TabelasProtheus](images/TabelasProtheus.gif)
 
 
 ## Deploy via Docker
