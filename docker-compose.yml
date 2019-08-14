@@ -1,9 +1,9 @@
-version: '3.7'
+version: '3.3'
 
 services:
   app:
     image: 'tgmti/tabelas-protheus'
-    ports: 
+    ports:
       - 80:80
 
   api:

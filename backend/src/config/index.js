@@ -29,7 +29,7 @@ function writeDbConfig(newConfig) {
 
 
 function configPage(config) {
-    const { database, host, user, port } = config;
+    const { sgdb, database, host, user, port } = config;
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -41,16 +41,25 @@ function configPage(config) {
     </head>
     <body>
         <h3> Dados de conexão com o servidor PostgreSQL</h3>
-        
+
         <form method="post">
-            <div><span>Database  </span><input type="text" name="database" value="${database}" /></div>
-            <div><span>Host:     </span><input type="text" name="host" value="${host}" /></div>
-            <div><span>User:     </span><input type="text" name="user" value="${user}" /></div>
-            <div><span>Password: </span><input type="password" name="password" value="" /></div>
-            <div><span>Port:     </span><input type="text" name="port" value="${port}" /></div>
-        
+
+            <div>
+                <span>SGDB:</span>
+                <br/>
+                <label>MS Sql Server: <input type="radio" name="sgdb" value="mssql" ${sgdb === 'mssql'? 'checked': ''} /></label>
+                <br/>
+                <label>PostgreSQL:    <input type="radio" name="sgdb" value="pg" ${sgdb === 'pg'? 'checked': ''} /></label>
+            </div>
+            <br/>
+            <div><label>Database  <input type="text" name="database" value="${database}" /> </label></div>
+            <div><label>Host:     <input type="text" name="host" value="${host}" /> </label></div>
+            <div><label>User:     <input type="text" name="user" value="${user}" /> </label></div>
+            <div><label>Password: <input type="password" name="password" value="" /> </label></div>
+            <div><label>Port:     <input type="text" name="port" value="${port}" /> </label></div>
+
             <input type="submit">
-        </form>        
+        </form>
     </body>
     </html>
     `

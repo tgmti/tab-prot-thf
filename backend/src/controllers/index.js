@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const sql = require('mssql')
 const configdb = require('../config/dbconfig.json');
 
 const company = '99'
@@ -38,15 +39,9 @@ async function query(table, fieldsDefault, request, response) {
         const fieldsOrder = orderFields(request.query.order, fieldsNormalized);
 
         const query = mountQuery(table, fieldsSelect, fieldsWhere, fieldsOrder, page, pageSize);
-        
-        const pool = new Pool(configdb);
-        
-        
-        const result = await pool.query(query);
-        const { rows } = result;
-        const hasNext = rows.length > pageSize;
-        const items = rows.slice(0, pageSize)
-        
+
+        const { items, hasNext } = await getDbQuery(configdb, query, pageSize);
+
         response.json({ hasNext, items });
 
     } catch (error) {
@@ -73,14 +68,14 @@ function normalizedefaultFields(fields) {
     }));
 }
 
-// Retorna os campos requisitados em ordem 
+// Retorna os campos requisitados em ordem
 function selectFields(fields, defaultFields) {
-    
+
     if (fields) {
         const selected = normalizeFields(fields)
             .filter(f => defaultFields.find(def => def.name === f));
 
-        if (selected && selected.length) 
+        if (selected && selected.length)
             return selected.map(f => defaultFields.find(def => def.name === f));
     }
 
@@ -89,14 +84,14 @@ function selectFields(fields, defaultFields) {
 
 // Retorna os campos de ordenação devidamente normalizados e com a instrução decrescente quando necessário
 function orderFields(fields, defaultFields) {
-    
+
     if (fields) {
         const defNames = defaultFields.map(f => f.name);
         const orderFields = normalizeFields(fields)
             .map(f=> f.slice(0,1) === '-' ? `${f.slice(1)} DESC` : f )
             .filter(f => defNames.includes( f.split(' ')[0]));
 
-        if (orderFields && orderFields.length) 
+        if (orderFields && orderFields.length)
             return orderFields;
     }
 
@@ -107,25 +102,25 @@ function orderFields(fields, defaultFields) {
 function filterFields(filter, defaultFields) {
 
     if (filter) {
-        return [{ 
+        return [{
             name: defaultFields.filter(f => f.canFilter )
-            .map( f=> `UPPER(TRIM(${f.name}))` )
+            .map( f=> `UPPER(RTRIM(${f.name}))` )
             .join('||'),
             command: 'LIKE',
             value: `%${filter.trim().toUpperCase()}%`
         }];
     }
-    
+
     return [];
 }
 
 // Organiza os campos que serão passados para a Cláusula Where
 function whereFields(fields, defaultFields) {
-    
+
     const defNames = defaultFields.map(f => f.name);
 
     if (fields) {
-        
+
         //TODO: tratar command para os campos que não são texto
         const whereFields = Object.keys(fields)
             .filter(name => defNames.includes( name.trim().toUpperCase() ))
@@ -133,29 +128,29 @@ function whereFields(fields, defaultFields) {
                 console.log(f)
                 const nameUpper = f.trim().toUpperCase();
                 const {type} = defaultFields.find(def => def.name === nameUpper);
-                const name = type === 'C' ? `UPPER(TRIM(${nameUpper}))` : nameUpper;
+                const name = type === 'C' ? `UPPER(RTRIM(${nameUpper}))` : nameUpper;
                 const command = type === 'C' ? 'LIKE' : '=';
                 const value = type === 'C' ? `%${fields[f].trim().toUpperCase()}%` : fields[f];
 
                 return { name, command, value };
             });
-        
-        if (whereFields && whereFields.length) 
+
+        if (whereFields && whereFields.length)
             return whereFields;
     }
-    
+
     return [];
-    
+
 }
 
 
 // Monta a query SQL
-function mountQuery(table, select, where, order, page, pageSize) {
-    
-    const fields = select.map(f=> f.type === 'C' ? `TRIM(${f.name}) AS ${f.name}` : f.name ).join(', ');
+function mountQuery(sgdb, table, select, where, order, page, pageSize) {
+
+    const fields = select.map(f=> f.type === 'C' ? `RTRIM(${f.name}) AS ${f.name}` : f.name ).join(', ');
     let values = [];
     let query = ''
-    
+
     query+= ` SELECT ${fields}`
     query+= ` FROM ${table}${company}0 ${table}`
     query+= ` WHERE ${table}.D_E_L_E_T_ = ' '`;
@@ -170,13 +165,62 @@ function mountQuery(table, select, where, order, page, pageSize) {
     }
 
     query+= ` ORDER BY ${ order.length > 0 ? order.join(', ') : '1, 2'}`;
-    
-    query+= `
-    LIMIT ${pageSize + 1}
-    OFFSET ${(page -1) * pageSize}`
-    
-    
+
+    if (sgdb === 'mssql') {
+        query+= `
+        OFFSET ${(page -1) * pageSize} ROWS
+        FETCH NEXT ${pageSize + 1} ROWS ONLY `
+    } else {
+        query+= `
+        LIMIT ${pageSize + 1}
+        OFFSET ${(page -1) * pageSize}`
+    }
+
+
     console.info(query, values);
     //{text:'SELECT * FROM SX6990 WHERE X6_VAR = $1', values: ['MV_ESPECIE']}
     return { text: query, values };
+}
+
+
+async function getDbQuery(configdb, query, pageSize) {
+    if (configdb.sgdb === 'mssql') {
+        return await getMsSqlQuery(configdb, query, pageSize);
+    } else {
+        return await getPgquery(configdb, query, pageSize);
+    }
+}
+
+async function getPgquery(configdb, query, pageSize) {
+
+    const pool = new Pool(configdb);
+    const result = await pool.query(query);
+    const { rows } = result;
+    const hasNext = rows.length > pageSize;
+    const items = rows.slice(0, pageSize)
+
+    return { items, hasNext }
+}
+
+async function getMsSqlQuery(configdb, query, pageSize) {
+    const { host: server, database, user, password } = configdb;
+    const port = parseInt(configdb.port);
+
+    const pool = new sql.ConnectionPool({
+        server,
+        port,
+        database,
+        user,
+        password,
+    });
+    console.log( pool.connect(err => {
+        if (err) {
+            console.log(err);
+            return null;
+        }
+
+        console.log('sql query: ', pool.query(query.text, query.values));
+
+    }));
+
 }

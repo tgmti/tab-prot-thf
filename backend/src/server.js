@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
-
+const APIPORT = 3334
 const server = express();
 
 server.use(cors());
@@ -9,4 +9,4 @@ server.use(express.json());
 server.use(express.urlencoded());
 server.use(routes);
 
-server.listen(3333);
+server.listen(APIPORT, ()=> console.log(`API Listening on ${APIPORT} port...`));
