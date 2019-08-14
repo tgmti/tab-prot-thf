@@ -1,10 +1,8 @@
 # Imagem com um banco PostgreSQL inicializado com a versão 12.1.17
 FROM docker.totvs.io/dcp/database_postgres
 
-RUN mkdir /tmp/dumps
-
-ADD export.sh /export.sh
-RUN ./export.sh
+COPY clean* /
+RUN /cleandatabase.sh
 
 # Conectar no banco e apagar as tabelas que não serão usadas
 FROM postgres:12-alpine
@@ -19,8 +17,4 @@ ENV TZ="America/Sao_Paulo"
 ENV POSTGRES_PASSWORD="Totvs@123"
 ENV POSTGRES_DB="protheus"
 
-COPY --from=0 /tmp/dumps /tmp/dumps
-
-ADD restore.sh /restore.sh
-CMD ["postgres"]
-# && ./restore.sh
+COPY --from=0 /tmp/db $PGDATA
