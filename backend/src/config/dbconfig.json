@@ -1,1 +1,1 @@
-{"database":"protheus","host":"localhost","user":"postgres","password":"Totvs@123","port":"5432"}
+{"database":"protheus","host":"db","user":"postgres","password":"Totvs@123","port":"5432"}

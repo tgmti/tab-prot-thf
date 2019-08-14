@@ -1,12 +1,5 @@
-const { Pool } = require('pg')
-
-const configdb = {
-    database: 'protheus',
-    host: '172.17.0.2',
-    user: 'postgres',
-    password: 'Totvs@123',
-    port: 5432,
-};
+const { Pool } = require('pg');
+const configdb = require('../config/dbconfig.json');
 
 const company = '99'
 
