@@ -1,1 +1,1 @@
-{"sgdb":"mssql","database":"PCICAS_V12","host":"192.168.1.93","user":"thiago","password":"270985","port":"1433"}
+{"sgdb":"mssql","database":"PCICAS_V12","host":"192.168.1.93","user":"thiago","password":"270985","port":"1433", "company": "ZZ" }

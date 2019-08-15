@@ -2,8 +2,6 @@ const { Pool } = require('pg');
 const sql = require('mssql')
 const configdb = require('../config/dbconfig.json');
 
-const company = '99'
-
 const ParamsSchema = require('./ParamsSchema');
 const TablesSchema = require('./TablesSchema');
 const IndexesSchema= require('./IndexesSchema');
@@ -38,15 +36,15 @@ async function query(table, fieldsDefault, request, response) {
         const fieldsWhere = [...filter,...whereFields(request.query, fieldsNormalized)];
         const fieldsOrder = orderFields(request.query.order, fieldsNormalized);
 
-        const query = mountQuery(table, fieldsSelect, fieldsWhere, fieldsOrder, page, pageSize);
+        const query = mountQuery(configdb, table, fieldsSelect, fieldsWhere, fieldsOrder, page, pageSize);
 
-        const { items, hasNext } = await getDbQuery(configdb, query, pageSize);
+        const { items, hasNext, message } = await getDbQuery(configdb, query, pageSize);
 
-        response.json({ hasNext, items });
+        response.json({ hasNext, items, message });
 
     } catch (error) {
-        console.error(`Error on get: ${table}${company}0`, error);
-        response.status(400).json({ message: `Error on get: ${table}${company}0`, stack: error.stack } );
+        console.error(`Error on get: ${table}${configdb.company}0`, error);
+        response.status(400).json({ message: `Error on get: ${table}${configdb.company}0`, stack: error.stack } );
     }
 
 }
@@ -145,14 +143,14 @@ function whereFields(fields, defaultFields) {
 
 
 // Monta a query SQL
-function mountQuery(sgdb, table, select, where, order, page, pageSize) {
+function mountQuery(configdb, table, select, where, order, page, pageSize) {
 
     const fields = select.map(f=> f.type === 'C' ? `RTRIM(${f.name}) AS ${f.name}` : f.name ).join(', ');
     let values = [];
     let query = ''
 
     query+= ` SELECT ${fields}`
-    query+= ` FROM ${table}${company}0 ${table}`
+    query+= ` FROM ${table}${configdb.company}0 ${table}`
     query+= ` WHERE ${table}.D_E_L_E_T_ = ' '`;
 
     if ( where.length > 0) {
@@ -166,7 +164,7 @@ function mountQuery(sgdb, table, select, where, order, page, pageSize) {
 
     query+= ` ORDER BY ${ order.length > 0 ? order.join(', ') : '1, 2'}`;
 
-    if (sgdb === 'mssql') {
+    if (configdb.sgdb === 'mssql') {
         query+= `
         OFFSET ${(page -1) * pageSize} ROWS
         FETCH NEXT ${pageSize + 1} ROWS ONLY `
@@ -213,14 +211,13 @@ async function getMsSqlQuery(configdb, query, pageSize) {
         user,
         password,
     });
-    console.log( pool.connect(err => {
-        if (err) {
-            console.log(err);
-            return null;
-        }
+    await pool.connect();
 
-        console.log('sql query: ', pool.query(query.text, query.values));
+    const {recordset: rows} = await pool.query(query.text, query.values);
+    //console.log(rows)
+    const hasNext = rows.length > pageSize;
+    const items = rows.slice(0, pageSize)
 
-    }));
+    return { items, hasNext }
 
 }
