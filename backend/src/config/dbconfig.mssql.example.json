@@ -1,0 +1,1 @@
+{"sgdb":"mssql","database":"DATABASE_NAME","host":"SERVER_IP+INSTANCE","user":"DATABASE_USER","password":"DATABASE_PASSWORD","port":"1433", "company": "PROTHEUS_COMPANY_GROUP" }

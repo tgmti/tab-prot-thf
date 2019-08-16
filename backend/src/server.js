@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const routes = require('./routes');
-const APIPORT = 3334
+const APIPORT = 3333
 const server = express();
 
 server.use(cors());

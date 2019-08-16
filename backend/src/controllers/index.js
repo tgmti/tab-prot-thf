@@ -32,7 +32,7 @@ async function query(table, fieldsDefault, request, response) {
 
         const fieldsNormalized = normalizedefaultFields(fieldsDefault);
         const fieldsSelect = selectFields(request.query.fields, fieldsNormalized);
-        const filter = filterFields(request.query.filter, fieldsNormalized);
+        const filter = filterFields(configdb.sgdb, request.query.filter, fieldsNormalized);
         const fieldsWhere = [...filter,...whereFields(request.query, fieldsNormalized)];
         const fieldsOrder = orderFields(request.query.order, fieldsNormalized);
 
@@ -97,13 +97,15 @@ function orderFields(fields, defaultFields) {
 }
 
 // Monta o comando de filtro
-function filterFields(filter, defaultFields) {
+function filterFields(sgdb, filter, defaultFields) {
+
+    const sep = sgdb === 'mssql' ? '+' : '||';
 
     if (filter) {
         return [{
             name: defaultFields.filter(f => f.canFilter )
             .map( f=> `UPPER(RTRIM(${f.name}))` )
-            .join('||'),
+            .join(sep),
             command: 'LIKE',
             value: `%${filter.trim().toUpperCase()}%`
         }];
@@ -146,6 +148,7 @@ function whereFields(fields, defaultFields) {
 function mountQuery(configdb, table, select, where, order, page, pageSize) {
 
     const fields = select.map(f=> f.type === 'C' ? `RTRIM(${f.name}) AS ${f.name}` : f.name ).join(', ');
+    const paramIdentifier = configdb.sgdb === 'mssql' ? '@param' : '$';
     let values = [];
     let query = ''
 
@@ -157,7 +160,7 @@ function mountQuery(configdb, table, select, where, order, page, pageSize) {
         // TODO: Tratar campos que não são texto
         query+= ` AND ${where.map(f => {
             values.push(f.value);
-            return `${f.name} ${f.command} $${values.length} `
+            return `${f.name} ${f.command} ${paramIdentifier}${values.length} `
         }).join(' AND ') } `;
 
     }
@@ -200,9 +203,17 @@ async function getPgquery(configdb, query, pageSize) {
     return { items, hasNext }
 }
 
+// Converte as chaves do Objeto para LowerCase
+const convObj = obj => {
+	newObj = {};
+	Object.entries(obj).forEach(o => newObj[o[0].toLowerCase()] = o[1] );
+    return newObj;
+}
+
 async function getMsSqlQuery(configdb, query, pageSize) {
     const { host: server, database, user, password } = configdb;
     const port = parseInt(configdb.port);
+    const { text, values } = query;
 
     const pool = new sql.ConnectionPool({
         server,
@@ -213,11 +224,15 @@ async function getMsSqlQuery(configdb, query, pageSize) {
     });
     await pool.connect();
 
-    const {recordset: rows} = await pool.query(query.text, query.values);
-    //console.log(rows)
+    const request = pool.request();
+
+    values.forEach((value,index) => request.input(`param${index+1}`, value));
+
+    const {recordset: rows} = await request.query(text);
     const hasNext = rows.length > pageSize;
-    const items = rows.slice(0, pageSize)
+    const items = rows.slice(0, pageSize).map( row => convObj(row) );
 
     return { items, hasNext }
 
 }
+
