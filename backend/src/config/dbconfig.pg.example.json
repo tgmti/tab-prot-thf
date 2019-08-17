@@ -1,0 +1,9 @@
+{
+    "sgdb": "pg",
+    "database": "DATABASE_NAME",
+    "host": "SERVER_IP",
+    "user": "DATABASE_USER",
+    "password": "DATABASE_PASSWORD",
+    "port": "5432",
+    "company": "PROTHEUS_COMPANY_GROUP"
+}
