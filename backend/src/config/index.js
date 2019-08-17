@@ -4,7 +4,6 @@ const dbConfig = require('./dbconfig.json');
 
 module.exports = {
     configPage(req, res) {
-        console.log(dbConfig);
         res.send(configPage(dbConfig));
     },
     setConfig(req, res) {
@@ -17,10 +16,9 @@ module.exports = {
 }
 
 function writeDbConfig(newConfig) {
-    console.log(newConfig);
     fs.writeFile(configFile, JSON.stringify(newConfig), 'utf-8', (err)=> {
         if (err) {
-            console.log('Error getConfig', err);
+            console.error('Error getConfig', err);
             return `Error config Database: ${err}`;
         }
         return `Database configuration success!`;

@@ -125,7 +125,6 @@ function whereFields(fields, defaultFields) {
         const whereFields = Object.keys(fields)
             .filter(name => defNames.includes( name.trim().toUpperCase() ))
             .map(f => {
-                console.log(f)
                 const nameUpper = f.trim().toUpperCase();
                 const {type} = defaultFields.find(def => def.name === nameUpper);
                 const name = type === 'C' ? `UPPER(RTRIM(${nameUpper}))` : nameUpper;
