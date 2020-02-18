@@ -1,7 +1,7 @@
 {
     "sgdb": "pg",
     "database": "protheus",
-    "host": "db",
+    "host": "localhost",
     "user": "postgres",
     "password": "Totvs@123",
     "port": "5432",

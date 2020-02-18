@@ -10,7 +10,7 @@ import { PoMenuItem } from '@portinari/portinari-ui';
 export class AppComponent {
 
   readonly menus: Array<PoMenuItem> = [
-    { label: 'Home', action: this.onClick.bind(this) },
+    { label: 'Home', link: '/' },
     { label: 'Tabelas', link: '/tables' },
     { label: 'Campos', link: '/fields' },
     { label: 'Indices', link: '/indexes' },
