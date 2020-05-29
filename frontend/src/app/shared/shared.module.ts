@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DynamicSearchPageComponent } from './components/dynamic-search-page/dynamic-search-page.component';
-import { PoPageDynamicSearchModule } from '@portinari/portinari-templates';
-import { PoTableModule } from '@portinari/portinari-ui';
+import { PoPageDynamicSearchModule } from '@po-ui/ng-templates';
+import { PoTableModule } from '@po-ui/ng-components';
 
 @NgModule({
   declarations: [DynamicSearchPageComponent],

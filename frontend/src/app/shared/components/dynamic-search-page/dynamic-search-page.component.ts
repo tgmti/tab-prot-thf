@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { PoBreadcrumb, PoTableColumn, PoDynamicFormField } from '@portinari/portinari-ui';
+import { PoBreadcrumb, PoTableColumn, PoDynamicFormField } from '@po-ui/ng-components';
 
 @Component({
   selector: 'app-dynamic-search-page',

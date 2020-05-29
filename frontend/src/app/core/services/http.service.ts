@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { PoTableColumn } from '@portinari/portinari-ui';
+import { PoTableColumn } from '@po-ui/ng-components';
 
 import { environment } from 'src/environments/environment';
 

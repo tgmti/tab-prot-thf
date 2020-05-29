@@ -24,8 +24,8 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@portinari/style/css/po-theme-default.min.css",
-              "node_modules/@totvs/portinari-theme/css/po-theme-default.min.css"
+              "./node_modules/@po-ui/style/css/po-theme-default.min.css",
+              "node_modules/@totvs/po-theme/css/po-theme-default.min.css"
             ],
             "scripts": []
           },
@@ -89,8 +89,8 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/@portinari/style/css/po-theme-default.min.css",
-              "node_modules/@totvs/portinari-theme/css/po-theme-default.min.css"
+              "./node_modules/@po-ui/style/css/po-theme-default.min.css",
+              "node_modules/@totvs/po-theme/css/po-theme-default.min.css"
             ],
             "scripts": []
           }

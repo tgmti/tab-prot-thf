@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { PoI18nConfig, PoI18nModule } from '@portinari/portinari-ui';
+import { PoI18nConfig, PoI18nModule } from '@po-ui/ng-components';
 
 import { LiteralService } from './i18n/literal.service';
 import { HttpService } from './services/http.service';

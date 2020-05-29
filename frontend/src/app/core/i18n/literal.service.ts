@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { PoI18nService } from '@portinari/portinari-ui';
+import { PoI18nService } from '@po-ui/ng-components';
 
 @Injectable({
   providedIn: 'root'
