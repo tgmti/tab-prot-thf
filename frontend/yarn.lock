@@ -1238,6 +1238,34 @@
     rxjs "6.5.4"
     webpack-sources "1.4.3"
 
+"@po-ui/ng-components@2.4.0", "@po-ui/ng-components@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@po-ui/ng-components/-/ng-components-2.4.0.tgz#cdce5d2e696efc7eb1b48561a44ceee1fd3a4a04"
+  integrity sha512-F6vuFMjsO6kbhwxGi1sSkzHPnlSGXF6qlU7IlE5TUCcQMF87uMZZaGHaHzmhGkmBfT6qCdYc/ey6XIiOpB8Oxw==
+  dependencies:
+    "@po-ui/ng-schematics" "2.4.0"
+    "@po-ui/style" "2.4.0"
+    tslib "^1.10.0"
+
+"@po-ui/ng-schematics@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@po-ui/ng-schematics/-/ng-schematics-2.4.0.tgz#11290cf8884caf1491de46ac738fef2c575ccca0"
+  integrity sha512-hoY+SR9TPE37pr9W5UdnYlbxGkMB2+bcbr/fOobkCFMij074lGKWkPSP5zZqfOqGsrA5EfZcxRK3mNNiJ9CC0g==
+
+"@po-ui/ng-templates@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@po-ui/ng-templates/-/ng-templates-2.4.0.tgz#870c6e0549be9250f89f0ff37e27a1d31ae175dc"
+  integrity sha512-CNSp6BB2P+UcZRNNrMFxc9/g4rTkTj8jzAJwQbT3ANxERCTR4UVdPw2JBd/UYigR5rJWYmmbNmtkicHjzpe1WA==
+  dependencies:
+    "@po-ui/ng-components" "2.4.0"
+    "@po-ui/ng-schematics" "2.4.0"
+    tslib "^1.10.0"
+
+"@po-ui/style@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@po-ui/style/-/style-2.4.0.tgz#884c80c6c4eb65666f8c9f8d4cf0a7b4ec7f4865"
+  integrity sha512-ljPnWBc+qflgRIxb29bYCegGovoQcTybTk4Il4tCP+a1K9ysANfujMgBhOJurqMrpHykdQQ41r8JTwr3bG4VXw==
+
 "@portinari/portinari-templates@^1.26.0":
   version "1.26.0"
   resolved "https://registry.yarnpkg.com/@portinari/portinari-templates/-/portinari-templates-1.26.0.tgz#5427cccf6821fabb5f5f820feab592155cd3c72f"
@@ -1295,6 +1323,11 @@
     rxjs "6.5.4"
     semver "7.1.3"
     semver-intersect "1.4.0"
+
+"@totvs/po-theme@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@totvs/po-theme/-/po-theme-2.4.0.tgz#e91ab591104e3940d7d821fd8927cad4c4e1195a"
+  integrity sha512-UnOVr70Mgxv4nUwGUSP+IpTEe+PmeyqCL6Pq6ZtMXUUZEQACvBUZIivROAo30+VtmZ3yjF3ZbJjcyZAYlplnkw==
 
 "@totvs/portinari-theme@^1.26.0":
   version "1.26.0"
