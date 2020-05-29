@@ -1014,6 +1014,25 @@
     rxjs "6.5.4"
     webpack-sources "1.4.3"
 
+"@po-ui/ng-components@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@po-ui/ng-components/-/ng-components-2.4.0.tgz#cdce5d2e696efc7eb1b48561a44ceee1fd3a4a04"
+  integrity sha512-F6vuFMjsO6kbhwxGi1sSkzHPnlSGXF6qlU7IlE5TUCcQMF87uMZZaGHaHzmhGkmBfT6qCdYc/ey6XIiOpB8Oxw==
+  dependencies:
+    "@po-ui/ng-schematics" "2.4.0"
+    "@po-ui/style" "2.4.0"
+    tslib "^1.10.0"
+
+"@po-ui/ng-schematics@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@po-ui/ng-schematics/-/ng-schematics-2.4.0.tgz#11290cf8884caf1491de46ac738fef2c575ccca0"
+  integrity sha512-hoY+SR9TPE37pr9W5UdnYlbxGkMB2+bcbr/fOobkCFMij074lGKWkPSP5zZqfOqGsrA5EfZcxRK3mNNiJ9CC0g==
+
+"@po-ui/style@2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@po-ui/style/-/style-2.4.0.tgz#884c80c6c4eb65666f8c9f8d4cf0a7b4ec7f4865"
+  integrity sha512-ljPnWBc+qflgRIxb29bYCegGovoQcTybTk4Il4tCP+a1K9ysANfujMgBhOJurqMrpHykdQQ41r8JTwr3bG4VXw==
+
 "@schematics/angular@9.1.7":
   version "9.1.7"
   resolved "https://registry.yarnpkg.com/@schematics/angular/-/angular-9.1.7.tgz#b7801a5e20f844da560db81d2971590e8ac090ff"
