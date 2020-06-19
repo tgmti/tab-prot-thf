@@ -13,3 +13,7 @@ Baixar o [arquivo Compose](https://github.com/tgmti/tab-prot-thf/blob/master/doc
 
 
 ## [Features Planejadas](https://github.com/tgmti/tab-prot-thf/issues/3)
+
+## Referências
+
+* Baseado no Saudoso [TabProt](https://github.com/glauberlima/TabelasProtheus)
