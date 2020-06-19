@@ -27,7 +27,7 @@ function writeDbConfig(newConfig) {
 
 
 function configPage(config) {
-    const { sgdb, database, host, user, port } = config;
+    const { sgdb, database, host, user, port, company } = config;
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -38,7 +38,7 @@ function configPage(config) {
         <title>Tabelas Protheus API - Configuração</title>
     </head>
     <body>
-        <h3> Dados de conexão com o servidor PostgreSQL</h3>
+        <h3> Dados de conexão com o servidor SQL</h3>
 
         <form method="post">
 
@@ -55,6 +55,7 @@ function configPage(config) {
             <div><label>User:     <input type="text" name="user" value="${user}" /> </label></div>
             <div><label>Password: <input type="password" name="password" value="" /> </label></div>
             <div><label>Port:     <input type="text" name="port" value="${port}" /> </label></div>
+            <div><label>Company:  <input type="text" name="company" value="${company}" /> </label></div>
 
             <input type="submit">
         </form>
