@@ -1,6 +1,6 @@
 #include 'totvs.ch'
 #include 'parmtype.ch'
-#INCLUDE 'TabProtTHF.CH'
+#INCLUDE 'TabProtAdapter.CH'
 
 //============================================================================\
 /*/{Protheus.doc}TabProtAdapter

@@ -31,19 +31,25 @@ WSRESTFUL TabProtTHF ;
     WSDATA aQueryString AS ARRAY OPTIONAL
 
     WSMETHOD GET Tables ;
-        DESCRIPTION 'Retornar os metadados das Tabelas do sistema' ;
+        DESCRIPTION 'Retornar os das Tabelas do sistema' ;
         WSSYNTAX '/tables || /tables/{id}' ;
         PATH '/tables' ;
         PRODUCES APPLICATION_JSON
 
+    WSMETHOD GET MdTables ;
+        DESCRIPTION 'Retornar os metadados das Tabelas do sistema' ;
+        WSSYNTAX '/tables/metadata' ;
+        PATH '/tables/metadata' ;
+        PRODUCES APPLICATION_JSON
+
     WSMETHOD GET OneTable ;
-        DESCRIPTION 'Retornar os metadados de uma Tabela do sistema' ;
-        WSSYNTAX '/tables/{id}' ;
-        PATH '/tables/{id}' ;
+        DESCRIPTION 'Retornar os de uma Tabela do sistema' ;
+        WSSYNTAX '/tables/one/{id}' ;
+        PATH '/tables/one/{id}' ;
         PRODUCES APPLICATION_JSON
 
     WSMETHOD GET Fields ;
-        DESCRIPTION 'Retornar os metadados dos campos do sistema' ;
+        DESCRIPTION 'Retornar os dos campos do sistema' ;
         WSSYNTAX '/fields' ;
         PATH '/fields' ;
         PRODUCES APPLICATION_JSON
@@ -55,7 +61,7 @@ WSRESTFUL TabProtTHF ;
         PRODUCES APPLICATION_JSON
 
     WSMETHOD GET Indexes ;
-        DESCRIPTION 'Retornar os metadados dos índices do sistema' ;
+        DESCRIPTION 'Retornar os dos índices do sistema' ;
         WSSYNTAX '/indexes' ;
         PATH '/indexes' ;
         PRODUCES APPLICATION_JSON
@@ -76,6 +82,20 @@ END WSRESTFUL
 WSMETHOD GET Tables QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
 Return ( GetResult( Self, SX2_TABLE, SX2_FIELDS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
 // FIM do método GET Tables
+//======================================================================================================================
+
+
+//====================================================================================================================\
+/*/{Protheus.doc}TabProtTHF|GET MdTables
+  ====================================================================================================================
+   @description
+   Método GET para as entidades
+   @author Thiago Mota <tgmspawn@gmail.com>
+/*/
+//===================================================================================================================\
+WSMETHOD GET MdTables QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
+Return ( GetMetadata( Self, SX2_TABLE ) )
+// FIM do método GET MdTables
 //======================================================================================================================
 
 
@@ -168,3 +188,21 @@ Return ( lRet )
 
 
 
+//============================================================================\
+/*/{Protheus.doc}GetMetadata
+  ==============================================================================
+    @description
+    Retorna os metadados da tabela
+    @author Thiago Mota <tgmspawn@gmail.com>
+/*/
+//============================================================================\
+Static Function GetMetadata( oRest, cTable )
+
+    Local lRet := .T.
+    Local oAdap:= TabProtMetadata():New(cTable)
+
+    oRest:SetResponse(oAdap:GetMetadata())
+
+Return ( lRet )
+// FIM da Funcao GetMetadata
+//==============================================================================
