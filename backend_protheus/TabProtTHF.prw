@@ -3,23 +3,20 @@
 #INCLUDE 'TabProtTHF.CH'
 
 
-//====================================================================================================================\
 /*/{Protheus.doc}TabProtTHF
-  ====================================================================================================================
-    @description
-    API para consulta das configurações do dicionário Protheus
+@description
+API para consulta das configurações do dicionário Protheus
 
-    @author Thiago Mota <tgmspawn@gmail.com>
+@author Thiago Mota <tgmspawn@gmail.com>
 
-    @obs
-    Seguindo o Guia de implementação de API V2.0
-    http://tdn.totvs.com.br/pages/viewpage.action?pageId=484701395
+@obs
+Seguindo o Guia de implementação de API V2.0
+http://tdn.totvs.com.br/pages/viewpage.action?pageId=484701395
 
-    Utilizando a classe FWAdapterBaseV2 conforme tutorial
-    https://medium.com/totvsdevelopers/criando-servi%C3%A7os-rest-avan%C3%A7ados-no-protheus-parte-2-trabalhando-com-filtros-3973b95e416f
+Utilizando a classe FWAdapterBaseV2 conforme tutorial
+https://medium.com/totvsdevelopers/criando-servi%C3%A7os-rest-avan%C3%A7ados-no-protheus-parte-2-trabalhando-com-filtros-3973b95e416f
 
 /*/
-//===================================================================================================================\
 WSRESTFUL TabProtTHF ;
     DESCRIPTION 'API para consulta das configurações do dicionário Protheus' ;
     FORMAT "application/json,text/html"
@@ -28,13 +25,8 @@ WSRESTFUL TabProtTHF ;
     WSDATA pageSize   AS INTEGER OPTIONAL
     WSDATA fields     AS STRING OPTIONAL
     WSDATA order      AS STRING OPTIONAL
+    WSDATA search     AS STRING OPTIONAL
     WSDATA aQueryString AS ARRAY OPTIONAL
-
-    WSMETHOD GET Tables ;
-        DESCRIPTION 'Retornar os das Tabelas do sistema' ;
-        WSSYNTAX '/tables || /tables/{id}' ;
-        PATH '/tables' ;
-        PRODUCES APPLICATION_JSON
 
     WSMETHOD GET MdTables ;
         DESCRIPTION 'Retornar os metadados das Tabelas do sistema' ;
@@ -42,14 +34,38 @@ WSRESTFUL TabProtTHF ;
         PATH '/tables/metadata' ;
         PRODUCES APPLICATION_JSON
 
+    WSMETHOD GET MdFields ;
+        DESCRIPTION 'Retornar os metadados das Tabelas do sistema' ;
+        WSSYNTAX '/fields/metadata' ;
+        PATH '/fields/metadata' ;
+        PRODUCES APPLICATION_JSON
+
+    WSMETHOD GET MdIndexes ;
+        DESCRIPTION 'Retornar os metadados das Tabelas do sistema' ;
+        WSSYNTAX '/indexes/metadata' ;
+        PATH '/indexes/metadata' ;
+        PRODUCES APPLICATION_JSON
+
+    WSMETHOD GET MdParams ;
+        DESCRIPTION 'Retornar os metadados das Tabelas do sistema' ;
+        WSSYNTAX '/params/metadata' ;
+        PATH '/params/metadata' ;
+        PRODUCES APPLICATION_JSON
+
+    WSMETHOD GET Tables ;
+        DESCRIPTION 'Retornar os das Tabelas do sistema' ;
+        WSSYNTAX '/tables' ;
+        PATH '/tables' ;
+        PRODUCES APPLICATION_JSON
+
     WSMETHOD GET OneTable ;
-        DESCRIPTION 'Retornar os de uma Tabela do sistema' ;
-        WSSYNTAX '/tables/one/{id}' ;
-        PATH '/tables/one/{id}' ;
+        DESCRIPTION 'Retornar uma Tabela do sistema' ;
+        WSSYNTAX '/tables/{id}' ;
+        PATH '/tables/{id}' ;
         PRODUCES APPLICATION_JSON
 
     WSMETHOD GET Fields ;
-        DESCRIPTION 'Retornar os dos campos do sistema' ;
+        DESCRIPTION 'Retornar os campos do sistema' ;
         WSSYNTAX '/fields' ;
         PATH '/fields' ;
         PRODUCES APPLICATION_JSON
@@ -61,118 +77,98 @@ WSRESTFUL TabProtTHF ;
         PRODUCES APPLICATION_JSON
 
     WSMETHOD GET Indexes ;
-        DESCRIPTION 'Retornar os dos índices do sistema' ;
+        DESCRIPTION 'Retornar os índices do sistema' ;
         WSSYNTAX '/indexes' ;
         PATH '/indexes' ;
         PRODUCES APPLICATION_JSON
 
 END WSRESTFUL
-// FIM da definição do WSRESTFUL
-//======================================================================================================================
 
 
-//====================================================================================================================\
-/*/{Protheus.doc}TabProtTHF|GET Tables
-  ====================================================================================================================
-   @description
-   Método GET para as entidades
-   @author Thiago Mota <tgmspawn@gmail.com>
-/*/
-//===================================================================================================================\
-WSMETHOD GET Tables QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
-Return ( GetResult( Self, SX2_TABLE, SX2_FIELDS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
-// FIM do método GET Tables
-//======================================================================================================================
-
-
-//====================================================================================================================\
 /*/{Protheus.doc}TabProtTHF|GET MdTables
-  ====================================================================================================================
-   @description
-   Método GET para as entidades
-   @author Thiago Mota <tgmspawn@gmail.com>
+@description
+Método GET para os metadados de tabelas
 /*/
-//===================================================================================================================\
 WSMETHOD GET MdTables QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
-Return ( GetMetadata( Self, SX2_TABLE ) )
-// FIM do método GET MdTables
-//======================================================================================================================
+Return ( GetMetadata( Self, 'SX2' ) )
 
 
+/*/{Protheus.doc}TabProtTHF|GET MdFields
+@description
+Método GET para os metadados de campos
+/*/
+WSMETHOD GET MdFields QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
+Return ( GetMetadata( Self, 'SX3' ) )
 
-//====================================================================================================================\
+
+/*/{Protheus.doc}TabProtTHF|GET MdIndexes
+@description
+Método GET para os metadados de índices
+/*/
+WSMETHOD GET MdIndexes QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
+Return ( GetMetadata( Self, 'SIX' ) )
+
+
+/*/{Protheus.doc}TabProtTHF|GET MdParams
+@description
+Método GET para os metadados de parâmetros
+/*/
+WSMETHOD GET MdParams QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
+Return ( GetMetadata( Self, 'SX6' ) )
+
+
+/*/{Protheus.doc}TabProtTHF|GET Tables
+@description
+Método GET para as entidades
+/*/
+WSMETHOD GET Tables QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
+Return ( GetResult( Self, SX2_TABLE, SX2_FIELDS, SX2_KEYS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
+
+
 /*/{Protheus.doc}TabProtTHF|GET Fields
-  ====================================================================================================================
-   @description
-   Método GET para as entidades
+@description
+Método GET para as entidades
    @author Thiago Mota <tgmspawn@gmail.com>
 /*/
-//===================================================================================================================\
-WSMETHOD GET Fields QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
-Return ( GetResult( Self, SX3_TABLE, SX3_FIELDS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
-// FIM do método GET
-//======================================================================================================================
+WSMETHOD GET Fields QUERYPARAM page, pageSize, fields, order, search WSREST TabProtTHF
+    conout(AsString(::search))
+    conout(AsString(::aQueryString))
+Return ( GetResult( Self, SX3_TABLE, SX3_FIELDS, SX3_KEYS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
 
 
-
-//====================================================================================================================\
 /*/{Protheus.doc}TabProtTHF|GET Params
-  ====================================================================================================================
-   @description
-   Método GET para as entidades
-   @author Thiago Mota <tgmspawn@gmail.com>
+@description
+Método GET para as entidades
 /*/
-//===================================================================================================================\
 WSMETHOD GET Params QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
-Return ( GetResult( Self, SX6_TABLE, SX6_FIELDS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
-// FIM do método GET
-//======================================================================================================================
+Return ( GetResult( Self, SX6_TABLE, SX6_FIELDS, SX6_KEYS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
 
 
-
-//====================================================================================================================\
 /*/{Protheus.doc}TabProtTHF|GET Indexes
-  ====================================================================================================================
-   @description
-   Método GET para as entidades
-   @author Thiago Mota <tgmspawn@gmail.com>
+@description
+Método GET para as entidades
 /*/
-//===================================================================================================================\
 WSMETHOD GET Indexes QUERYPARAM page, pageSize, fields, order WSREST TabProtTHF
-Return ( GetResult( Self, SIX_TABLE, SIX_FIELDS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
-// FIM do método GET
-//======================================================================================================================
+Return ( GetResult( Self, SIX_TABLE, SIX_FIELDS, SIX_KEYS, .T.,::page,::pageSize,::fields,::order, ::aQueryString ) )
 
 
-
-//====================================================================================================================\
 /*/{Protheus.doc}TabProtTHF|GET OneTable
-  ====================================================================================================================
-   @description
-   Método GET para as entidades
-   @author Thiago Mota <tgmspawn@gmail.com>
+@description
+Método GET para as entidades
 /*/
-//===================================================================================================================\
 WSMETHOD GET OneTable QUERYPARAM fields WSREST TabProtTHF
     aQueryString:= {{"CHAVE",::aURLParms[2]}}
-Return ( GetResult( Self, SX2_TABLE, SX2_FIELDS, .F.,,, ::fields,, aQueryString ) )
-// FIM do método GET
-//======================================================================================================================
+Return ( GetResult( Self, SX2_TABLE, SX2_FIELDS, SX2_KEYS, .F.,,, ::fields,, aQueryString ) )
 
 
-
-//============================================================================\
 /*/{Protheus.doc}GetResult
-  ==============================================================================
-    @description
-    Executa o Adapter para a rota
-    @author Thiago Mota <tgmspawn@gmail.com>
+@description
+Executa o Adapter para a rota
 /*/
-//============================================================================\
-Static Function GetResult( oRest, cTable, aFields, lList, nPage, nPageSize, cFields, cOrder, aQueryString )
+Static Function GetResult( oRest, cTable, aFields, aKeys, lList, nPage, nPageSize, cFields, cOrder, aQueryString )
 
     Local lRet:= .F.
-    Local oAdapter := TabProtAdapter():New(cTable, aFields, 'GET', lList)
+    Local oAdapter := TabProtAdapter():New(cTable, aFields, aKeys, 'GET', lList)
 
     oAdapter:ExecGet(nPage, nPageSize, cFields, cOrder, aQueryString )
 
@@ -183,19 +179,12 @@ Static Function GetResult( oRest, cTable, aFields, lList, nPage, nPageSize, cFie
     EndIf
 
 Return ( lRet )
-// FIM da Funcao GetResult
-//==============================================================================
 
 
-
-//============================================================================\
 /*/{Protheus.doc}GetMetadata
-  ==============================================================================
-    @description
-    Retorna os metadados da tabela
-    @author Thiago Mota <tgmspawn@gmail.com>
+@description
+Retorna os metadados da tabela
 /*/
-//============================================================================\
 Static Function GetMetadata( oRest, cTable )
 
     Local lRet := .T.
@@ -204,5 +193,3 @@ Static Function GetMetadata( oRest, cTable )
     oRest:SetResponse(oAdap:GetMetadata())
 
 Return ( lRet )
-// FIM da Funcao GetMetadata
-//==============================================================================

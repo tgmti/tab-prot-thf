@@ -14,6 +14,7 @@ CLASS TabProtAdapter FROM FWAdapterBaseV2
 
     DATA cTable     AS String
     DATA aFields    AS Array
+    DATA aKeys      AS Array
 
     METHOD New() CONSTRUCTOR
     METHOD ExecGet()
@@ -37,10 +38,11 @@ ENDCLASS
     @param lList  , Indica se deve retornar uma lista de registros
 /*/
 //============================================================================\
-METHOD New(cTable, aFields, cVerb, lList) CLASS TabProtAdapter
+METHOD New(cTable, aFields, aKeys, cVerb, lList) CLASS TabProtAdapter
     _Super:New( cVerb, lList )
     ::cTable    := cTable
     ::aFields   := aFields
+    ::aKeys     := aKeys
 Return (Self)
 // FIM do método New
 //==============================================================================
@@ -58,16 +60,24 @@ Return (Self)
 METHOD ExecGet(nPage, nPageSize, cFields, cOrder, aQueryString) CLASS TabProtAdapter
 
     Local aAreaBkp:= FwGetArea()
+    Local cSearch:= ""
+    Local aQuery
 
     ::SetMapFields(::aFields)
 
     IIf( !Empty(nPage), ::SetPage(nPage), Nil )
     IIf( !Empty(nPageSize), ::SetPageSize(nPageSize), Nil )
-    IIf( !Empty(aQueryString), ::SetUrlFilter( aQueryString ), Nil )
+
+    If !Empty(aQueryString)
+        aQuery:= QueryString(::aFields, ::aKeys, aQueryString, @cSearch)
+
+        IIf( !Empty(aQuery), ::SetUrlFilter( aQuery ), Nil )
+    EndIf
+
     IIf( !Empty(cFields), ::SetFields(cFields), Nil )
 
     ::SetQuery(GetQuery(::cTable))
-    ::SetWhere( "D_E_L_E_T_ = ' '" )
+    ::SetWhere( "D_E_L_E_T_ = ' '" + cSearch )
     ::SetOrder( CheckOrder( ::aFields, cOrder ) )
 
 	If ::Execute()
@@ -143,3 +153,15 @@ Return ( cOrderRet )
 //=============================================================================
 
 
+Static Function QueryString(aFields, aKeys, aQueryString, cSearch)
+    Local aSearch:= U_aFind(aQueryString, {|x| Upper(x[1]) == "SEARCH" })
+    Local cFields:= "FILTER|" + U_aJoin(U_aMap(aFields, {|x| Upper(x[1]) }), "|")
+    Local aQuery:= U_aFilter(aQueryString, {|x| Upper(x[1]) $ cFields})
+    Default cSearch:= ""
+
+    If !Empty(aSearch)
+        aLike:= U_aMap(aKeys, {|x| "UPPER(" + x + ") LIKE '%" + Upper(aSearch[2]) + "%'" })
+        cSearch:= "AND (" + U_aJoin(aLike, " OR ") + ")"
+    EndIf
+
+Return aQuery

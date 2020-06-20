@@ -16,6 +16,11 @@
     { "x2_unico"  , "X2_UNICO"  , .F., .F., { "X2_UNICO"  , "C", 250, 00 } } ;
 }
 
+#DEFINE SX2_KEYS { "X2_CHAVE","X2_ARQUIVO","X2_NOME" }
+#DEFINE SX3_KEYS { "X3_ARQUIVO", "X3_CAMPO", "X3_TITULO", "X3_DESCRIC" }
+#DEFINE SIX_KEYS { "INDICE", "CHAVE", "DESCRICAO", "NICKNAME" }
+#DEFINE SX6_KEYS { "X6_FIL", "X6_VAR", "X6_TIPO", "X6_CONTEUD" }
+
 #DEFINE SX3_FIELDS { ;
     { "x3_arquivo", "X3_ARQUIVO", .F., .F., { "X3_ARQUIVO", "C", 003, 00 } } , ;
     { "x3_ordem"  , "X3_ORDEM"  , .F., .F., { "X3_ORDEM"  , "C", 002, 00 } } , ;
