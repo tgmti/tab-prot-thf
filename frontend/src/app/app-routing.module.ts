@@ -1,17 +1,23 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { TablesComponent } from './tables/tables.component';
-import { ParamsComponent } from './params/params.component';
-import { IndexesComponent } from './indexes/indexes.component';
-import { FieldsComponent } from './fields/fields.component';
+import { PoPageDynamicTableComponent } from '@po-ui/ng-templates';
 
+const serviceApi = (path: string) => `http://localhost:3333/${path}`;
 
 const routes: Routes = [
-  { path: 'tables', component: TablesComponent },
-  { path: 'fields', component: FieldsComponent },
-  { path: 'indexes', component: IndexesComponent },
-  { path: 'params', component: ParamsComponent },
+  { path: 'tables', component: PoPageDynamicTableComponent, data: {
+    serviceApi: serviceApi('tables'),
+  } },
+  { path: 'fields', component: PoPageDynamicTableComponent, data: {
+    serviceApi: serviceApi('fields'),
+  } },
+  { path: 'indexes', component: PoPageDynamicTableComponent, data: {
+    serviceApi: serviceApi('indexes'),
+  } },
+  { path: 'params', component: PoPageDynamicTableComponent, data: {
+    serviceApi: serviceApi('params'),
+  } },
 ];
 
 @NgModule({

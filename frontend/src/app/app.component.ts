@@ -17,8 +17,4 @@ export class AppComponent {
     { label: 'Parâmetros', link: '/params' },
   ];
 
-  private onClick() {
-    alert('Clicked in menu item')
-  }
-
 }
