@@ -3,7 +3,9 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { PoPageDynamicTableComponent } from '@po-ui/ng-templates';
 
-const serviceApi = (path: string) => `http://localhost:3333/${path}`;
+import backendCFG from '../assets/backendCFG.json';
+
+const serviceApi = (path: string) => `${backendCFG.urlAPI}${path}`;
 
 const routes: Routes = [
   { path: 'tables', component: PoPageDynamicTableComponent, data: {
