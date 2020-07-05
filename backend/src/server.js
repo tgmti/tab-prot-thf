@@ -15,6 +15,9 @@ server.use(cors());
 server.use(express.json());
 server.use(bodyParser.urlencoded({ extended: true }));
 server.use(bodyParser.json());
+
+server.use(express.static(__dirname + '/dist/tab-prot-thf'));
+
 server.use(routes);
 
 server.listen(APIPORT, ()=> console.info(`API Listening on ${APIPORT} port...`));
